@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { ClarityModule } from 'clarity-angular';
+import { ChartsModule } from 'ng2-charts';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
@@ -18,6 +19,7 @@ import { reducer as datasetReducer } from './store/reducers/dataset.reducer';
 	declarations: [AppComponent, HeaderComponent],
 	imports: [
 		BrowserModule,
+		ChartsModule,
 		ClarityModule.forRoot(),
 		StoreModule.forRoot({
 			availableDatasets: datasetReducer
