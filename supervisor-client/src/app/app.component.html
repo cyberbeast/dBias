@@ -1,0 +1,13 @@
+<app-header></app-header>
+<div style="width: 40%;">
+    <canvas
+        baseChart
+        [chartType]="chartType"
+        [datasets]="chartData"
+        [labels]="chartLabels"
+        [options]="chartOptions"
+        [legend]="true"
+        (chartClick)="onChartClick($event)">
+    </canvas>
+  </div>
+body
