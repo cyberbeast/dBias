@@ -1,6 +1,8 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule } from '@angular/forms';
 import { ClarityModule } from 'clarity-angular';
 import { ChartsModule } from 'ng2-charts';
 
@@ -15,10 +17,12 @@ import { StoreModule } from '@ngrx/store';
 // service imports
 import { DatasetService } from './store/services/dataset.service';
 import { SupervisorService } from './store/services/supervisor.service';
+import { TaskService } from './store/services/task.service';
 
 // reducer imports
 import { reducer as datasetReducer } from './store/reducers/dataset.reducer';
 import { reducer as supervisorReducer } from './store/reducers/supervisor.reducer';
+import { reducer as taskReducer } from './store/reducers/task.reducer';
 
 const appRoutes: Routes = [
 	{ path: 'client', component: ClientComponent },
@@ -35,15 +39,17 @@ const appRoutes: Routes = [
 	declarations: [AppComponent, HeaderComponent, ClientComponent, SupervisorComponent],
 	imports: [
 		BrowserModule,
-		ChartsModule,
+		BrowserAnimationsModule,
+		FormsModule,
 		RouterModule.forRoot(appRoutes, { enableTracing: true }),
 		ClarityModule.forRoot(),
 		StoreModule.forRoot({
 			availableDatasets: datasetReducer,
-			supervisorConfiguration: supervisorReducer
+			supervisorConfiguration: supervisorReducer,
+			currentTasks: taskReducer
 		})
 	],
-	providers: [DatasetService, SupervisorService],
+	providers: [DatasetService, SupervisorService, TaskService],
 	bootstrap: [AppComponent]
 })
 export class AppModule {}
