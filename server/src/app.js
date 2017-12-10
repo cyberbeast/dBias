@@ -3,6 +3,10 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const morgan = require('morgan');
 const socketio = require('socket.io');
+const mongoose = require('mongoose');
+const config = require('./config');
+const Task = require('./models/task');
+mongoose.connect(config.dbURI, { useMongoClient: true });
 
 const app = express();
 app.use(morgan('combined'));
@@ -71,5 +75,31 @@ io.on('connection', function(socket) {
 			event: 'RES:toggleSupervisor',
 			data: supervisorConfiguration
 		});
+	});
+
+	socket.on('newTask', function(params) {
+		var tempTask = new Task(params);
+		tempTask.save(function(err, temp) {
+			if (err) console.log('Error while creating new task template. ', err);
+
+			Task.findById(temp.id, function(err, task) {
+				if (err) console.log('Error while retrieving the newly created task template. ', err);
+				console.log('Sending... ', task);
+				socket.send({ event: 'RES:newTask', data: task });
+			});
+		});
+	});
+
+	socket.on('getTasks', function() {
+		console.log('Client requesting for Current System Tasks');
+		Task.find({}, function(err, tasks) {
+			if (err) throw err;
+
+			socket.send({ event: 'RES:getTasks', data: tasks });
+		});
+	});
+
+	socket.on('trainTaskByID', function(id) {
+		console.log('Client requesting trainTaskByID on: ', id);
 	});
 });
