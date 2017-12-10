@@ -36,8 +36,8 @@ def dump_json(data):
             continue
         counter_values_below_50[i] = Counter(data_less50[i])
         counter_values_above_50[i] = Counter(data_more50[i])
-    counter_values_below_50={k: dict(v) for k, v in counter_values_below_50.iteritems()}
-    counter_values_above_50={k: dict(v) for k, v in counter_values_above_50.iteritems()}
+    counter_values_below_50={k: dict(v) for k, v in counter_values_below_50.items()}
+    counter_values_above_50={k: dict(v) for k, v in counter_values_above_50.items()}
     return counter_values_above_50,counter_values_below_50
 
 def preprocess_data(data):

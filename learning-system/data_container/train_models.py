@@ -3,6 +3,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 #from xgboost import XGBClassifier
 from sklearn.ensemble import RandomForestClassifier as RF
+from sklearn.metrics import confusion_matrix
 
 # def XGB_classifier(x,y):
 #     model = XGBClassifier(max_depth=119, n_jobs=-1)
@@ -26,5 +27,14 @@ def train_model(model_name,x,y):
 def predict_model(model,x):
     pred = model.predict(x)
     return pred
+
+def compute_metrices(data,model_name):
+    [tn, fp], [fn, tp] = confusion_matrix(data['class'],data[model_name])
+    accuracy = (tp + tn) / float(tp + tn + fp + fn)
+    print ('Accuracy of model',accuracy)
+    classification_error = (fp + fn) / float(tp + tn + fp + fn)
+    recall = tp / float(tp + fn)
+    precision = tp / float(tp + fp)
+    return accuracy,classification_error,recall,precision
 
 

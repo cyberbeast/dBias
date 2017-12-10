@@ -12,6 +12,7 @@ def filter_data(dataset,option='race',value='all'):
         subset = dataset[mask]
     else:
         subset = dataset
+    subset.fillna(0)
     features = dataset.columns
     values = []
     for i in features:
@@ -26,13 +27,15 @@ def filter_data(dataset,option='race',value='all'):
 
 def skew_calculator(data,feature):
     encoded_dataset = data.values
-    features = list(data.columns.values)
+    features = data.columns
     variables = data[feature].unique()
     all_skew_values = []
     for i in variables:
-        list_skew_values= filter_data(data,feature,i)
+        list_skew_values = filter_data(data,feature,i)
+        print(i, list_skew_values)
         all_skew_values.append(list_skew_values)
     all_skew_values.append(filter_data(data))
+    print('all', all_skew_values[-1])
     return all_skew_values,variables,features # Return this for ng-chart
     # exit()
     # val1 = pd.DataFrame({'features':features,'values':val1})
