@@ -1,20 +1,21 @@
 {
-	"name": "server",
-	"version": "1.0.0",
-	"description": "",
-	"main": "index.js",
-	"scripts": {
-		"start": "./node_modules/nodemon/bin/nodemon.js src/app.js",
-		"test": "echo \"Error: no test specified\" && exit 1"
-	},
-	"author": "Sandesh Gade (sandeshgade@gmail.com)",
-	"license": "ISC",
-	"dependencies": {
-		"body-parser": "^1.18.2",
-		"cors": "^2.8.4",
-		"eslint": "^4.13.0",
-		"express": "^4.16.2",
-		"morgan": "^1.9.0",
-		"nodemon": "^1.12.5"
-	}
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "./node_modules/nodemon/bin/nodemon.js src/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sandesh Gade (sandeshgade@gmail.com)",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
+    "eslint": "^4.13.0",
+    "express": "^4.16.2",
+    "morgan": "^1.9.0",
+    "nodemon": "^1.12.5",
+    "socket.io": "^2.0.4"
+  }
 }

@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const morgan = require('morgan');
+const socketio = require('socket.io');
 
 const app = express();
 app.use(morgan('combined'));
@@ -17,4 +18,58 @@ app.get('/posts', (req, res) => {
 	]);
 });
 
-app.listen(process.env.PORT || 8081);
+var server = app.listen(process.env.PORT || 8081, function() {
+	console.log('Server listening on *:8081');
+});
+
+var io = socketio(server);
+var supervisorConfiguration = {
+	active: false
+};
+
+io.on('connection', function(socket) {
+	console.log('a user connected');
+
+	socket.on('disconnect', function() {
+		console.log('user disconnected');
+	});
+
+	socket.on('getDatasets', function() {
+		console.log('Client requesting for available datasets');
+		var sampleDatasetList = [
+			{
+				name: 'Sample',
+				description: 'Nice Description',
+				features: ['age', 'race'],
+				rows: 20
+			},
+			{
+				name: 'Sample2',
+				description: 'Nice Description2',
+				features: ['age2', 'race2'],
+				rows: 220
+			}
+		];
+		socket.send({
+			event: 'RES:getDatasets',
+			data: sampleDatasetList
+		});
+	});
+
+	socket.on('getSupervisorConfiguration', function() {
+		console.log('Supervisor Client requesting for Supervisor Configuration');
+		socket.send({
+			event: 'RES:getSupervisorConfiguration',
+			data: supervisorConfiguration
+		});
+	});
+
+	socket.on('toggleSupervisor', function() {
+		supervisorConfiguration.active = supervisorConfiguration.active == true ? false : true;
+		console.log('Supervisor Client is requesting to toggle state!', supervisorConfiguration.active);
+		socket.send({
+			event: 'RES:toggleSupervisor',
+			data: supervisorConfiguration
+		});
+	});
+});
