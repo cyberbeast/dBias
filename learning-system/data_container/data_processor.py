@@ -24,22 +24,26 @@ def filter_data(dataset,option='race',value='all'):
     return values
 
 
-def skew_calculator(data):
+def skew_calculator(data,feature):
     encoded_dataset = data.values
     features = list(data.columns.values)
-    val1= filter_data(data,'race','White')
-    val2 = filter_data(data,'race','Black')
-    val3 = filter_data(data)
-    val1 = pd.DataFrame({'features':features,'values':val1})
-    val2 = pd.DataFrame({'features':features,'values':val2})
-    val3 = pd.DataFrame({'features':features,'values':val3})
-    fig, ax = plt.subplots()
-    sns.pointplot(x='features', y='values', data=val1, ax=ax, color='b')
-    sns.pointplot(x='features', y='values', data=val2, ax=ax, color='g')
-    sns.pointplot(x='features', y='values', data=val3, ax=ax, color='k')
-    ax.set_xticklabels(features, rotation=-30)
-    plt.savefig('skew.png')
-    return 0
+    variables = data[feature].unique()
+    all_skew_values = []
+    for i in variables:
+        list_skew_values= filter_data(data,feature,i)
+        all_skew_values.append(list_skew_values)
+    all_skew_values.append(filter_data(data))
+    return all_skew_values,variables,features # Return this for ng-chart
+    # exit()
+    # val1 = pd.DataFrame({'features':features,'values':val1})
+    # val2 = pd.DataFrame({'features':features,'values':val2})
+    # val3 = pd.DataFrame({'features':features,'values':val3})
+    # fig, ax = plt.subplots()
+    # sns.pointplot(x='features', y='values', data=val1, ax=ax, color='b')
+    # sns.pointplot(x='features', y='values', data=val2, ax=ax, color='g')
+    # sns.pointplot(x='features', y='values', data=val3, ax=ax, color='k')
+    # ax.set_xticklabels(features, rotation=-30)
+    # plt.savefig('skew.png')
 
 '''
 Encode features intp numbers making it easier to make cor-relation matrix

@@ -10,10 +10,8 @@ if __name__ == "__main__":
     path = 'data/adult.data'
     data = read_data(path)
     more_50,less_50 = dump_json(data)
-
     plot_heatmap(data) # Plot heatmap, later convert to angular or send python image to client
     plot_scatterplot(data)
-    #skewed_data = skew_calculator(data) # Calculate skew
     #more_50 = json.dumps(more_50) send data to ng-chart
     #less_50 = json.dumps(less_50) send data to ng-chart
 
@@ -35,3 +33,12 @@ if __name__ == "__main__":
     # GT
     print "Ground Truth"
     print np.bincount(data['class'] == '>50K')
+
+    ##### End Training #####
+
+    #### Start Skewing #####
+    feature = 'race'
+    skewed_data,unique_values,headers = skew_calculator(data,feature) # Calculate skew
+    # Pass the data to angular to visualize the graph
+
+    #### End Skewing ######
