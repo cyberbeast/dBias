@@ -38,6 +38,7 @@ export type allSupervisorActions = ToggleSupervisor | GetSupervisor;
 // Actions for Task model.
 export const ADD_TASK: string = 'ADD_TASK';
 export const UPDATE_TASK: string = 'UPDATE_TASK';
+export const CREATE_TASK: string = 'CREATE_TASK';
 
 export class AddTask implements Action {
 	readonly type = ADD_TASK;
@@ -49,4 +50,8 @@ export class UpdateTask implements Action {
 	constructor(public payload: Task) {}
 }
 
-export type allTaskActions = AddTask | UpdateTask;
+export class CreateTask implements Action {
+	readonly type = CREATE_TASK;
+	constructor(public payload: Task) {}
+}
+export type allTaskActions = AddTask | UpdateTask | CreateTask;

@@ -32,12 +32,9 @@ export class TaskService {
 
 				case 'RES:getTasks': {
 					console.log('RES:getTasks', response);
-					response.data.map(task => {
-						console.log(task.name);
-						store.dispatch({
-							type: 'UPDATE_TASK',
-							payload: task
-						});
+					store.dispatch({
+						type: 'CREATE_TASK',
+						payload: response.data
 					});
 					break;
 				}

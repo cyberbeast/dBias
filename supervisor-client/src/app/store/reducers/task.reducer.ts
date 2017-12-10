@@ -14,11 +14,13 @@ export function reducer(state: State[] = null, action: Action) {
 		}
 
 		case StoreActions.UPDATE_TASK: {
-			return state == null
-				? [action.payload]
-				: state.map(task => {
-						return task._id === action.payload._id ? Object.assign({}, task, action.payload) : task;
-					});
+			return state.map(task => {
+				return task._id === action.payload._id ? Object.assign({}, task, action.payload) : task;
+			});
+		}
+
+		case StoreActions.CREATE_TASK: {
+			return action.payload;
 		}
 
 		default: {
