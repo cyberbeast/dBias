@@ -44,10 +44,10 @@ def preprocess_data(data):
     encoded_x = None
     numeric_x = None
     X = data.fillna(0).loc[:, data.columns != 'class'].values
-    X[X == '?'] = 0
+    X[X == '?'] = '0'
     Y = data['class']
     for i in range(0, X.shape[1]):
-        if type(X[0,i]) != unicode:
+        if type(X[0,i]) != str:
             if numeric_x is None:
                 numeric_x = X[:,i].reshape(X.shape[0], 1)
             else:

@@ -9,7 +9,7 @@ from data_container.train_models import train_model,predict_model
 if __name__ == "__main__":
     path = 'data/adult.data'
     data = read_data(path)
-    more_50,less_50 = dump_json(data)
+    #more_50,less_50 = dump_json(data)
     plot_heatmap(data) # Plot heatmap, later convert to angular or send python image to client
     plot_scatterplot(data)
     #more_50 = json.dumps(more_50) send data to ng-chart
@@ -27,12 +27,12 @@ if __name__ == "__main__":
     data[model_name] = Series(predict_model(model,x)) # Add to data frame
 
     # model
-    print "Result from trained model"
-    print np.bincount(data[model_name] == '>50K')
+    print ("Result from trained model")
+    print (np.bincount(data[model_name] == '>50K'))
 
     # GT
-    print "Ground Truth"
-    print np.bincount(data['class'] == '>50K')
+    print ("Ground Truth")
+    print (np.bincount(data['class'] == '>50K'))
 
     ##### End Training #####
 
