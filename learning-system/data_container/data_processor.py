@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from scipy import stats
 import sklearn.preprocessing as preprocessing
 import pandas as pd
-import numpy as numpy
+import numpy as np
 
 
 def filter_data(dataset,option='race',value='all'):
@@ -41,7 +41,22 @@ def skew_calculator(data):
     plt.savefig('skew.png')
     return 0
 
-def plot_heatmap(encoded_data):
+'''
+Encode features intp numbers making it easier to make cor-relation matrix
+'''
+def number_encode_features(data):
+    result = data.copy()
+    encoders = {}
+    for column in result.columns:
+        if result.dtypes[column] == np.object:
+            encoders[column] = preprocessing.LabelEncoder()
+            result[column] = encoders[column].fit_transform(result[column])
+    return result, encoders
+
+
+
+def plot_heatmap(data):
+    encoded_data, _ = number_encode_features(data)
     sns.heatmap(encoded_data.corr(), square=True)
     plt.xticks(rotation='vertical')
     plt.yticks(rotation='horizontal')
