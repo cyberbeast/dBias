@@ -1,21 +1,4 @@
 <app-header></app-header>
-<input type="radio" id="model1" name="model" value = 'line'>
-<label for="model1">Line</label>
-<input type="radio" id="model2" name="model" value = 'bar'>
-<label for="model2">Bar</label>
-<input type="radio" id="model3" name="model" value = 'doughnut'>
-<label for="model3">Doughnut</label>
-<div style="width: 80%;">
-    <canvas
-        baseChart
-        [chartType]="chartType"
-        [datasets]="chartData"
-        [labels]="chartLabels"
-        [options]="chartOptions"
-        [legend]="true"
-        (chartClick)="onChartClick($event)">
-    </canvas>
-  </div>
 
 body
 
