@@ -2,7 +2,7 @@ import json
 import numpy as np
 from pandas import Series
 from data_container.data_loader import read_data,dump_json,preprocess_data,get_validate_data
-from data_container.data_processor import plot_heatmap,skew_calculator
+from data_container.data_processor import plot_heatmap,skew_calculator,plot_scatterplot
 from data_container.train_models import train_model,predict_model
 # Calculate the correlation and plot it
     
@@ -12,7 +12,7 @@ if __name__ == "__main__":
     more_50,less_50 = dump_json(data)
 
     plot_heatmap(data) # Plot heatmap, later convert to angular or send python image to client
-
+    plot_scatterplot(data)
     #skewed_data = skew_calculator(data) # Calculate skew
     #more_50 = json.dumps(more_50) send data to ng-chart
     #less_50 = json.dumps(less_50) send data to ng-chart

@@ -61,5 +61,10 @@ def plot_heatmap(data):
     plt.xticks(rotation='vertical')
     plt.yticks(rotation='horizontal')
     plt.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.2)
-    plt.savefig('figure1.png')
+    plt.savefig('heatmap.png')
     return 0
+
+def plot_scatterplot(data):
+    sns.set(style="ticks")
+    sns.pairplot(data, hue="class")
+    plt.savefig('scatterplot.png')
