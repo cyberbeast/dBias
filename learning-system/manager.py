@@ -32,7 +32,9 @@ def train(model_id):
     global data
     global limit
     model_details = collection.find_one({"_id": ObjectId(model_id)})
-    print(model_details)
+    model_details['action'] = True
+    collection.update({'_id': ObjectId(model_id)}, {'$set': model_details}, upsert=False)
+    yield("Action: " + str(model_details['action']))
     if model_details['trained'] == False:
         if model_details['dataset'] =='Adult Census Income Dataset':
             path = path_files[model_details['dataset']]
@@ -40,7 +42,9 @@ def train(model_id):
             limit = int(0.8*data.shape[0])
             yield('finished loading data')
         else:
+            model_details['action'] = False
             yield ("Dataset not found")
+            
         x,y = preprocess_data(data)
         model_rf = train_model(model_first,x[:limit],y[:limit])
         model_dt = train_model(model_second,x[:limit],y[:limit])
@@ -52,10 +56,12 @@ def train(model_id):
         yield('Model Dumped')
     else:
         yield ("Model already trained")
-    model_details['action'] = True
+    model_details['action'] = False
+    collection.update({'_id': ObjectId(model_id)}, {'$set': model_details}, upsert=False)
+    yield("Action: " + str(model_details['action']))
     yield ("Done")
 
-def report_file(model_id):
+def report(model_id):
     pp = pprint.PrettyPrinter(indent=2)
     models = ['random_forest','decision_tree']
     attributes = data.columns
