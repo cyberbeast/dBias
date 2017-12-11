@@ -15,8 +15,6 @@ def onTrainRequest(*args):
         except StopIteration:
             socket.emit('LSRES:trainRequest', {'event':'ACK', 'clientID':client, 'data':'END', '_id': task})
             break           
-
-
 try:
     socket = SocketIO('localhost', 8081, wait_for_connection=False)
     socket.emit('pythonConnectionRequest')

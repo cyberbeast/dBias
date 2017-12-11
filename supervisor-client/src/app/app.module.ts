@@ -4,10 +4,11 @@ import { RouterModule, Routes } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { ClarityModule } from 'clarity-angular';
-import { NgPipesModule } from 'ngx-pipes';
 // import { ChartsModule } from 'ng2-charts';
 
 import { AppComponent } from './app.component';
+// import { BarChartDemoComponent } from './app.component';
+// import {SkewComponent} from './app.component';
 import { HeaderComponent } from './header/header.component';
 import { ClientComponent } from './client/client.component';
 import { SupervisorComponent } from './supervisor/supervisor.component';
@@ -58,8 +59,7 @@ const appRoutes: Routes = [
       availableDatasets: datasetReducer,
       supervisorConfiguration: supervisorReducer,
       currentTasks: taskReducer
-    }),
-    NgPipesModule
+    })
   ],
   providers: [DatasetService, SupervisorService, TaskService],
   bootstrap: [AppComponent]

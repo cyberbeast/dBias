@@ -30,13 +30,11 @@ def skew_calculator(data,feature):
     features = data.columns
     variables = data[feature].unique()
     all_skew_values = []
-    for i in variables:
-        list_skew_values = filter_data(data,feature,i)
-        print(i, list_skew_values)
+    for variable in variables:
+        list_skew_values = filter_data(data,feature,variable)
         all_skew_values.append(list_skew_values)
     all_skew_values.append(filter_data(data))
-    print('all', all_skew_values[-1])
-    return all_skew_values,variables,features # Return this for ng-chart
+    return all_skew_values,variables # Return this for ng-chart
     # exit()
     # val1 = pd.DataFrame({'features':features,'values':val1})
     # val2 = pd.DataFrame({'features':features,'values':val2})

@@ -28,7 +28,7 @@ def predict_model(model,x):
     pred = model.predict(x)
     return pred
 
-def compute_metrices(data,model_name):
+def compute_metrics(data,model_name):
     [tn, fp], [fn, tp] = confusion_matrix(data['class'],data[model_name])
     accuracy = (tp + tn) / float(tp + tn + fp + fn)
     print ('Accuracy of model',accuracy)
