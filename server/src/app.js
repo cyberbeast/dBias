@@ -160,6 +160,18 @@ io.on('connection', function(socket) {
 				});
 				break;
 			}
+
+			case 'END_TRAINING': {
+				console.log('Reaching here...');
+				Report.find({ task: response._id }, function(err, report) {
+					if (err) throw err;
+
+					io
+						.to(response.clientID)
+						.send({ event: 'RES:newReport', data: report });
+				});
+				break;
+			}
 		}
 	});
 });
