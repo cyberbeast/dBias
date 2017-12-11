@@ -83,13 +83,13 @@
           </div>
           <div class="card-text">
             {{task.description}}
+            <span *ngIf="task.action" class="label">{{statusMessage | idFilter: task._id }}</span>
           </div>
         </div>
         <div class="card-footer">
           <div *ngIf="task.action" class="progress loop">
             <progress></progress>
           </div>
-          <span *ngIf="task.action" class="label">Status</span>
           <button (click)="callTrain(task._id)" class="btn btn-sm btn-link" [class.disabled]="task.trained">Train</button>
           <button routerLink="/report/{{task._id}}" class="btn btn-sm btn-link" [class.disabled]="!task.trained">Report</button>
         </div>

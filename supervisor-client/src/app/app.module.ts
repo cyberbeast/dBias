@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { ClarityModule } from 'clarity-angular';
+import { NgPipesModule } from 'ngx-pipes';
 // import { ChartsModule } from 'ng2-charts';
 
 import { AppComponent } from './app.component';
@@ -24,34 +25,43 @@ import { TaskService } from './store/services/task.service';
 import { reducer as datasetReducer } from './store/reducers/dataset.reducer';
 import { reducer as supervisorReducer } from './store/reducers/supervisor.reducer';
 import { reducer as taskReducer } from './store/reducers/task.reducer';
+import { IdFilterPipe } from './id-filter.pipe';
 
 const appRoutes: Routes = [
-	{ path: 'client', component: ClientComponent },
-	{ path: 'supervisor', component: SupervisorComponent },
-	{ path: 'report/:id', component: ReportComponent },
-	{
-		path: '',
-		redirectTo: 'client',
-		pathMatch: 'full'
-	}
-	// { path: '**', component: PageNotFoundComponent }
+  { path: 'client', component: ClientComponent },
+  { path: 'supervisor', component: SupervisorComponent },
+  { path: 'report/:id', component: ReportComponent },
+  {
+    path: '',
+    redirectTo: 'client',
+    pathMatch: 'full'
+  }
+  // { path: '**', component: PageNotFoundComponent }
 ];
 
 @NgModule({
-	declarations: [AppComponent, HeaderComponent, ClientComponent, SupervisorComponent, ReportComponent],
-	imports: [
-		BrowserModule,
-		BrowserAnimationsModule,
-		FormsModule,
-		RouterModule.forRoot(appRoutes, { enableTracing: true }),
-		ClarityModule.forRoot(),
-		StoreModule.forRoot({
-			availableDatasets: datasetReducer,
-			supervisorConfiguration: supervisorReducer,
-			currentTasks: taskReducer
-		})
-	],
-	providers: [DatasetService, SupervisorService, TaskService],
-	bootstrap: [AppComponent]
+  declarations: [
+    AppComponent,
+    HeaderComponent,
+    ClientComponent,
+    SupervisorComponent,
+    ReportComponent,
+    IdFilterPipe
+  ],
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
+    FormsModule,
+    RouterModule.forRoot(appRoutes, { enableTracing: true }),
+    ClarityModule.forRoot(),
+    StoreModule.forRoot({
+      availableDatasets: datasetReducer,
+      supervisorConfiguration: supervisorReducer,
+      currentTasks: taskReducer
+    }),
+    NgPipesModule
+  ],
+  providers: [DatasetService, SupervisorService, TaskService],
+  bootstrap: [AppComponent]
 })
 export class AppModule {}

@@ -7,14 +7,17 @@ import 'rxjs/add/operator/map';
 
 import { AppStore } from '../models/appstore.model';
 import { Task } from '../models/task.model';
+import { Status } from '../models/status.model';
 
 import * as io from 'socket.io-client';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 @Injectable()
 export class TaskService {
   currentTasks$: Observable<Task[]>;
-
+  statusStream$ = new BehaviorSubject('');
   private socket: SocketIOClient.Socket;
+  self = this;
 
   constructor(private store: Store<AppStore>) {
     this.currentTasks$ = store.select('currentTasks');
@@ -50,10 +53,20 @@ export class TaskService {
     this.socket.emit('newTask', params);
   }
 
+  setNextMessageOnStatusStream(data) {
+    this.statusStream$.next(data);
+  }
+
+  handler(response) {
+    console.log('LS said: ', response);
+    this.setNextMessageOnStatusStream({
+      _id: response._id,
+      message: response.data
+    });
+  }
+
   trainTaskByID(id) {
     this.socket.emit('trainTaskByID', id);
-    this.socket.on('RES:trainRequest', function(response) {
-      console.log('LS said: ', response);
-    });
+    this.socket.on('RES:trainRequest', this.handler.bind(this));
   }
 }
