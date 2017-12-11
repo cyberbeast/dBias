@@ -101,3 +101,7 @@ ENV/
 .mypy_cache/
 
 .DS_Store
+
+learning-system/data/
+learning-system/models/
+*.png

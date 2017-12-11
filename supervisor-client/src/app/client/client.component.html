@@ -1,98 +1,99 @@
-
- <div class="content-container" style="padding-left:24px; padding-right:24px;">
-<!-- <pre>{{datasetList | json}}</pre> -->
-<div class="row flex-items-xs-center">
+<div class="content-container" style="padding-left:24px; padding-right:24px;">
+  <!-- <pre>{{datasetList | json}}</pre> -->
+  <div class="row flex-items-xs-center">
     <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">
-            
-<div class="row flex-items-xs-center">
-        
-                    <button type="button" class="btn btn-icon btn-primary" (click)="openWizard()">
-                        <clr-icon shape="plus"></clr-icon>
-                        New Task
-                    </button>
-                    </div>
-           
+
+      <div class="row flex-items-xs-center">
+
+        <button type="button" class="btn btn-icon btn-primary" (click)="openWizard()">
+          <clr-icon shape="plus"></clr-icon>
+          New Task
+        </button>
+      </div>
+
     </div>
-</div>
-<clr-wizard #wizardlg [(clrWizardOpen)]="lgOpen" clrWizardSize="lg">
-        <clr-wizard-title>New ML Task Wizard</clr-wizard-title>
-    
-        <clr-wizard-button [type]="'cancel'">Cancel</clr-wizard-button>
-        <clr-wizard-button [type]="'previous'">Back</clr-wizard-button>
-        <clr-wizard-button [type]="'next'">Next</clr-wizard-button>
-        <clr-wizard-button [type]="'finish'">Finish</clr-wizard-button>
-    
-        <clr-wizard-page>
-            <ng-template clrPageTitle>Information</ng-template>
-            Click on Next to begin.
-        </clr-wizard-page>
-    
-        <clr-wizard-page>
-            <ng-template clrPageTitle>Task Metadata</ng-template>
-            <form>
-                    <section class="form-block">
-                        <div class="form-group">
-                            <label for="aForm_1">Name</label>
-                            <input type="text" id="aForm_1" placeholder="Enter value here" size="45" name="name" [(ngModel)]="this.newTaskTemplate.name">
-                        </div>
-                        <div class="form-group">
-                                <label for="aForm_4">Description</label>
-                                <textarea id="aForm_4" name="description" rows="5" [(ngModel)]="this.newTaskTemplate.description" ></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="aForm_3">Available Datasets</label>
-                            <div class="select">
-                                <select id="aForm_3" name="dataset" [(ngModel)]="this.newTaskTemplate.dataset" >
-                                    <option>Adult Census Income Dataset</option>
-                                    <!-- <option>Option 2</option>
+  </div>
+  <clr-wizard #wizardlg [(clrWizardOpen)]="lgOpen" clrWizardSize="lg" (clrWizardOnFinish)="doFinish()">
+    <clr-wizard-title>New ML Task Wizard</clr-wizard-title>
+
+    <clr-wizard-button [type]="'cancel'">Cancel</clr-wizard-button>
+    <clr-wizard-button [type]="'previous'">Back</clr-wizard-button>
+    <clr-wizard-button [type]="'next'">Next</clr-wizard-button>
+    <clr-wizard-button [type]="'finish'">Finish</clr-wizard-button>
+
+    <clr-wizard-page>
+      <ng-template clrPageTitle>Information</ng-template>
+      Click on Next to begin.
+    </clr-wizard-page>
+
+    <clr-wizard-page>
+      <ng-template clrPageTitle>Task Metadata</ng-template>
+      <form>
+        <section class="form-block">
+          <div class="form-group">
+            <label for="aForm_1">Name</label>
+            <input type="text" id="aForm_1" placeholder="Enter value here" size="45" name="name" [(ngModel)]="this.newTaskTemplate.name">
+          </div>
+          <div class="form-group">
+            <label for="aForm_4">Description</label>
+            <textarea id="aForm_4" name="description" rows="5" [(ngModel)]="this.newTaskTemplate.description"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="aForm_3">Available Datasets</label>
+            <div class="select">
+              <select id="aForm_3" name="dataset" [(ngModel)]="this.newTaskTemplate.dataset">
+                <option>Adult Census Income Dataset</option>
+                <!-- <option>Option 2</option>
                                     <option>Option 3</option>
                                     <option>Option 4</option> -->
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                                <label for="aForm_3">Type</label>
-                                <div class="select">
-                                    <select id="aForm_3" name="type" [(ngModel)]="newTaskTemplate.type">
-                                        <option>Loan Approval</option>
-                                        <option>Advertising Reach Prediction</option>
-                                        <!-- <option>Option 2</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="aForm_3">Type</label>
+            <div class="select">
+              <select id="aForm_3" name="type" [(ngModel)]="newTaskTemplate.type">
+                <option>Loan Approval</option>
+                <option>Advertising Reach Prediction</option>
+                <!-- <option>Option 2</option>
                                         <option>Option 3</option>
                                         <option>Option 4</option> -->
-                                    </select>
-                                </div>
-                            </div>
-                    </section>
-                </form>
-        </clr-wizard-page>
-    
-        <clr-wizard-page (clrWizardPageOnCommit)="onCommit()">
-            <ng-template clrPageTitle>Review</ng-template>
-            <pre>{{newTaskTemplate | json}}</pre>
-        </clr-wizard-page>
-    </clr-wizard>
-
-    <div class="row">
-        <div *ngFor="let task of taskList" class="col-lg-3 col-md-8 col-sm-12 col-xs-12">
-            <div class="card">
-                <div class="card-header">
-                    {{task._id}}
-                </div>
-                <div class="card-block">
-                    <div class="card-title">
-                        {{task.name}}
-                    </div>
-                    <div class="card-text">
-                        {{task.description}}
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <button (click)="callTrain(task._id)"class="btn btn-sm btn-link">Train</button>
-                    <button class="btn btn-sm btn-link">Report</button>
-                </div>
+              </select>
             </div>
+          </div>
+        </section>
+      </form>
+    </clr-wizard-page>
+
+    <clr-wizard-page (clrWizardPageOnCommit)="onCommit()">
+      <ng-template clrPageTitle>Review</ng-template>
+      <pre>{{newTaskTemplate | json}}</pre>
+    </clr-wizard-page>
+  </clr-wizard>
+
+  <div class="row">
+    <div *ngFor="let task of taskList" class="col-lg-3 col-md-8 col-sm-12 col-xs-12">
+      <div class="card bug-fix">
+        <div class="card-header">
+          {{task._id}}
         </div>
+        <div class="card-block">
+          <div class="card-title">
+            {{task.name}}
+          </div>
+          <div class="card-text">
+            {{task.description}}
+            <span *ngIf="task.action" class="label">{{statusMessage | idFilter: task._id }}</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div *ngIf="task.action" class="progress loop">
+            <progress></progress>
+          </div>
+          <button (click)="callTrain(task._id)" class="btn btn-sm btn-link" [class.disabled]="task.trained">Train</button>
+          <button routerLink="/report/{{task._id}}" class="btn btn-sm btn-link" [class.disabled]="!task.trained">Report</button>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
-    
- 

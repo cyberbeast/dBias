@@ -6,4 +6,5 @@ export interface Task {
 	type: string;
 	trained: boolean;
 	accuracy: number;
+	action: boolean;
 }
