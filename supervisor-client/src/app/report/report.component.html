@@ -8,10 +8,10 @@
             <div class="row">
               <div class="col-xs">
                 <h2 style="margin-top:0px">
-                  <b>Name of Task</b>
+                  <b>{{currentTask['name']}}</b>
                 </h2>
 
-                <h5 style="margin-top:0px">Description of this task </h5>
+                <h5 style="margin-top:0px">{{currentTask['description']}} </h5>
 
               </div>
               <div class="col-xs">
@@ -28,13 +28,13 @@
                 </div>
                 <div class="row">
                   <div class="col-xs">
-                    <p style="font-size:400%; color:black; margin-top:5%">Yes</p>
+                    <p style="font-size:400%; color:black; margin-top:5%">{{currentTask['trained']}}</p>
                   </div>
                   <div class="col-xs">
-                    <p style="font-size:400%; color:black; margin-top:5%">75%</p>
+                    <p style="font-size:400%; color:black; margin-top:5%">{{currentTask['accuracy']}}</p>
                   </div>
                   <div class="col-xs">
-                    <p style="font-size:400%; color:black; margin-top:5%">False</p>
+                    <p style="font-size:400%; color:black; margin-top:5%">{{currentTask['action']}}</p>
                   </div>
                 </div>
               </div>
@@ -45,10 +45,10 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-xs">
+    <div class="col-xs" *ngFor="let model of currentReport.models">
       <div class="card">
         <div class="card-header">
-          <b>Decision Tree</b>
+          <b>{{model.type}}</b>
         </div>
         <div class="card-block">
 
@@ -73,18 +73,18 @@
             <div class="row flex-items-xs-center">
               <div class="col-xs">
                 <div class="row flex-items-xs-center">
-                  <p style="font-size:400%; color:black; margin-top:5%">99</p>
+                  <p style="font-size:300%; color:black; margin-top:5%">{{model.accuracy | floor: 2}}</p>
                 </div>
 
               </div>
               <div class="col-xs">
                 <div class="row flex-items-xs-center">
-                  <p style="font-size:400%; color:black; margin-top:5%">99</p>
+                  <p style="font-size:300%; color:black; margin-top:5%">{{model.precision | floor: 2}}</p>
                 </div>
               </div>
               <div class="col-xs">
                 <div class="row flex-items-xs-center">
-                  <p style="font-size:400%; color:black; margin-top:5%">99</p>
+                  <p style="font-size:300%; color:black; margin-top:5%">{{model.recall | floor: 2}}</p>
                 </div>
               </div>
             </div>
@@ -97,28 +97,12 @@
           <table class="table" style="margin-top:0%">
             <tbody>
               <tr>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>I</td>
+                <td>{{model.confusion_matrix[0]}}</td>
+                <td>{{model.confusion_matrix[1]}}</td>
               </tr>
               <tr>
-                <td>5</td>
-                <td>5</td>
-                <td>101</td>
-                <td>V</td>
-              </tr>
-              <tr>
-                <td>10</td>
-                <td>A</td>
-                <td>1010</td>
-                <td>X</td>
-              </tr>
-              <tr>
-                <td>15</td>
-                <td>F</td>
-                <td>1111</td>
-                <td>XV</td>
+                <td>{{model.confusion_matrix[2]}}</td>
+                <td>{{model.confusion_matrix[3]}}</td>
               </tr>
             </tbody>
           </table>
@@ -127,7 +111,7 @@
         <br />
       </div>
     </div>
-    <div class="col-xs">
+    <!-- <div class="col-xs">
       <div class="card">
         <div class="card-header">
           {{currentReport['task']}}
@@ -141,17 +125,17 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
   <div class="row flex-items-xs-center">
     <div class="col-xs">
       <div class="card">
         <div class="card-block">
-          <div class="card-title">
-            Block
-          </div>
+
           <div class="card-text">
-            ...
+            <div *ngFor="let image of currentVisualizations">
+              <img src="image" />
+            </div>
           </div>
         </div>
       </div>
