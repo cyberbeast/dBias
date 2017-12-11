@@ -4,12 +4,13 @@ import { RouterModule, Routes } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { ClarityModule } from 'clarity-angular';
-import { ChartsModule } from 'ng2-charts';
+// import { ChartsModule } from 'ng2-charts';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
 import { ClientComponent } from './client/client.component';
 import { SupervisorComponent } from './supervisor/supervisor.component';
+import { ReportComponent } from './report/report.component';
 
 // ngrx main imports
 import { StoreModule } from '@ngrx/store';
@@ -27,6 +28,7 @@ import { reducer as taskReducer } from './store/reducers/task.reducer';
 const appRoutes: Routes = [
 	{ path: 'client', component: ClientComponent },
 	{ path: 'supervisor', component: SupervisorComponent },
+	{ path: 'report/:id', component: ReportComponent },
 	{
 		path: '',
 		redirectTo: 'client',
@@ -36,7 +38,7 @@ const appRoutes: Routes = [
 ];
 
 @NgModule({
-	declarations: [AppComponent, HeaderComponent, ClientComponent, SupervisorComponent],
+	declarations: [AppComponent, HeaderComponent, ClientComponent, SupervisorComponent, ReportComponent],
 	imports: [
 		BrowserModule,
 		BrowserAnimationsModule,
