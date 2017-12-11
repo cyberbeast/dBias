@@ -104,3 +104,4 @@ ENV/
 
 learning-system/data/
 learning-system/models/
+*.png
