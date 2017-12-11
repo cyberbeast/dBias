@@ -25,6 +25,10 @@ var taskSchema = new Schema({
 	accuracy: {
 		type: Number,
 		default: 0
+	},
+	action: {
+		type: Boolean,
+		default: false
 	}
 });
 

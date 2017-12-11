@@ -33,7 +33,10 @@ var supervisorConfiguration = {
 
 io.on('connection', function(socket) {
 	console.log('a user connected');
-
+	socket.on('pythonConnectionRequest', function() {
+		console.log('Learning System connected...');
+		socket.join('learning-system');
+	});
 	socket.on('disconnect', function() {
 		console.log('user disconnected');
 	});
@@ -101,5 +104,14 @@ io.on('connection', function(socket) {
 
 	socket.on('trainTaskByID', function(id) {
 		console.log('Client requesting trainTaskByID on: ', id);
+		io.to('learning-system').emit('LS:trainRequest', { clientID: socket.id, taskID: id });
+	});
+
+	socket.on('LSRES:trainRequest', function(response) {
+		switch (response.event) {
+			case 'ACK': {
+				io.to(response.clientID).emit('RES:trainRequest', { event: response.event, data: response.data });
+			}
+		}
 	});
 });
