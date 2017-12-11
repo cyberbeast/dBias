@@ -29,6 +29,10 @@ var taskSchema = new Schema({
 	action: {
 		type: Boolean,
 		default: false
+	},
+	supervisor: {
+		type: Boolean,
+		default: true
 	}
 });
 

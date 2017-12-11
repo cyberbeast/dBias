@@ -23,7 +23,10 @@
 
     <clr-wizard-page>
       <ng-template clrPageTitle>Information</ng-template>
-      Click on Next to begin.
+      <div class="toggle-switch">
+        <input type="checkbox" id="toggle_1" [checked]=this.newTaskTemplate.supervisor [(ngModel)]="this.newTaskTemplate.supervisor">
+        <label for="toggle_1">Supervisor Mode</label>
+      </div>
     </clr-wizard-page>
 
     <clr-wizard-page>
@@ -75,23 +78,37 @@
     <div *ngFor="let task of taskList" class="col-lg-3 col-md-8 col-sm-12 col-xs-12">
       <div class="card bug-fix">
         <div class="card-header">
-          <p style="margin-top:0; color:darkgrey">{{task._id}} </p>
-          <span *ngIf="task.action" class="label">{{statusMessage | idFilter: task._id }}</span>
+
+          <div class="row flex-items-xs-between">
+            <div class="col-xs">
+              <p style="margin-top:0; color:darkgrey">
+                {{task._id}}
+              </p>
+            </div>
+            <div class="col-xs">
+              <p align="right" style="margin-top:0; color:darkgrey">
+                <clr-icon *ngIf="task.supervisor" shape="plugin" class="is-solid"></clr-icon>
+                <clr-icon *ngIf=" !task.supervisor " shape="warning-standard " class="is-solid"></clr-icon>
+              </p>
+            </div>
+          </div>
+
+          <span *ngIf="task.action " class="label ">{{statusMessage | idFilter: task._id }}</span>
 
         </div>
-        <div class="card-block">
-          <div class="card-text">
+        <div class="card-block ">
+          <div class="card-text ">
 
-            <h1 style="margin-top:0;">{{task.name}}</h1>
-            <p style="margin-top:0">{{task.description}}</p>
+            <h1 style="margin-top:0; ">{{task.name}}</h1>
+            <p style="margin-top:0 ">{{task.description}}</p>
           </div>
         </div>
-        <div class="card-footer">
-          <div *ngIf="task.action" class="progress loop">
+        <div class="card-footer ">
+          <div *ngIf="task.action " class="progress loop ">
             <progress></progress>
           </div>
-          <button (click)="callTrain(task._id)" class="btn btn-sm btn-link" [class.disabled]="task.trained">Train</button>
-          <button routerLink="/report/{{task._id}}" class="btn btn-sm btn-link" [class.disabled]="!task.trained">Report</button>
+          <button [clrLoading]="task.action" (click)="callTrain(task._id) " class="btn btn-sm btn-link " [class.disabled]="task.trained ">Train</button>
+          <button routerLink="/report/{{task._id}} " class="btn btn-sm btn-link " [class.disabled]="!task.trained ">Report</button>
         </div>
       </div>
     </div>
