@@ -72,8 +72,12 @@ io.on('connection', function(socket) {
 	});
 
 	socket.on('toggleSupervisor', function() {
-		supervisorConfiguration.active = supervisorConfiguration.active == true ? false : true;
-		console.log('Supervisor Client is requesting to toggle state!', supervisorConfiguration.active);
+		supervisorConfiguration.active =
+			supervisorConfiguration.active == true ? false : true;
+		console.log(
+			'Supervisor Client is requesting to toggle state!',
+			supervisorConfiguration.active
+		);
 		socket.send({
 			event: 'RES:toggleSupervisor',
 			data: supervisorConfiguration
@@ -86,7 +90,11 @@ io.on('connection', function(socket) {
 			if (err) console.log('Error while creating new task template. ', err);
 
 			Task.findById(temp.id, function(err, task) {
-				if (err) console.log('Error while retrieving the newly created task template. ', err);
+				if (err)
+					console.log(
+						'Error while retrieving the newly created task template. ',
+						err
+					);
 				console.log('Sending... ', task);
 				socket.send({ event: 'RES:newTask', data: task });
 			});
@@ -104,13 +112,21 @@ io.on('connection', function(socket) {
 
 	socket.on('trainTaskByID', function(id) {
 		console.log('Client requesting trainTaskByID on: ', id);
-		io.to('learning-system').emit('LS:trainRequest', { clientID: socket.id, taskID: id });
+		io
+			.to('learning-system')
+			.emit('LS:trainRequest', { clientID: socket.id, taskID: id });
 	});
 
 	socket.on('LSRES:trainRequest', function(response) {
 		switch (response.event) {
 			case 'ACK': {
-				io.to(response.clientID).emit('RES:trainRequest', { event: response.event, data: response.data });
+				io
+					.to(response.clientID)
+					.emit('RES:trainRequest', {
+						event: response.event,
+						data: response.data,
+						_id: response._id
+					});
 			}
 		}
 	});
