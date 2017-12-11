@@ -35,6 +35,6 @@ def compute_metrics(data,model_name):
     recall = tp / float(tp + fn)
     precision = tp / float(tp + fp)
     confusion_matrix_values = np.array([[tn, fp], [fn, tp]])
-    return accuracy,classification_error,recall,precision,confusion_matrix_values
+    return accuracy,classification_error,recall,precision,tn,fp,fn,tp
 
 

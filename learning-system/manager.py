@@ -16,6 +16,7 @@ try:
     db = client['dbias']
     db.authenticate('admin','admin')
     collection = db.tasks
+    report_collection = db.reports
 except Exception as e:
     print ("Error: ",e)
 
@@ -56,6 +57,12 @@ def train(model_id):
         yield('Model Dumped')
     else:
         yield ("Model already trained")
+    report_gen = report(model_id)
+    while True:
+        try:
+            yield(next(report_gen))
+        except StopIteration:
+            break
     model_details['action'] = False
     collection.update({'_id': ObjectId(model_id)}, {'$set': model_details}, upsert=False)
     yield("Action: " + str(model_details['action']))
@@ -64,35 +71,55 @@ def train(model_id):
 def report(model_id):
     pp = pprint.PrettyPrinter(indent=2)
     models = ['random_forest','decision_tree']
-    attributes = data.columns
+    attributes = list(data.columns.values)
+    report_document = report_collection.find_one({"task": ObjectId(model_id)})
     report_json = {}
     report_json['visualization'] = []
     report_json['visualization'].append(create_json_data(data))
+    report_collection.update({'task': ObjectId(model_id)}, {'$push':{'visualizations':create_json_data(data)}}, upsert=False)
+    yield("Data pushed to mongo")
     #plot_heatmap(data) # Plot heatmap
     #plot_scatterplot(data)
     x,y = preprocess_data(data)
     report_json['models']=[]
+    yield("First Visualization done")
     for model_name in models:
         model_obj = {}
         if os.path.exists('models/'+str(model_id)+model_name+'.pkl'):
             model = pickle.load(open('models/'+str(model_id)+model_name+'.pkl', 'rb'))
         else:
             continue
-            #yield ("Model not found")
+            yield ("Model not found")
         pred = predict_model(model,x[24000:])
         data[model_name] = Series(predict_model(model,x)) # Add to data frame
-        accuracy,classification_error,precision,recall,confusion_matrix = compute_metrics(data,model_name) # Send data to report
+        
+        accuracy,classification_error,precision,recall,tn,fp,fn,tp = compute_metrics(data,model_name) # Send data to report
+        model_obj = {
+            'accuracy': accuracy*100,
+            'classification_error': classification_error*100,
+            "precision": precision*100,
+            'recall': recall*100,
+            'confusion_matrix': [int(tn), int(fp), int(fn), int(tp)],
+            'feature_importance': model.feature_importances_.tolist()
+        }
         if model_name == 'random_forest':
             model_obj['type']= 'rf'
         else:
             model_obj['type']= 'dt'
-        model_obj['accuracy'] = accuracy*100
-        model_obj['classification_error'] = classification_error*100
-        model_obj['precision'] = precision*100
-        model_obj['recall'] = recall*100
-        model_obj['confusion_matrix'] = confusion_matrix
-        model_obj['feature_importance'] = model.feature_importances_
-        report_json['models'].append(model_obj)
+        
+        # model_obj['accuracy'] = 
+        # model_obj['classification_error'] = classification_error*100
+        # model_obj['precision'] = precision*100
+        # model_obj['recall'] = recall*100
+        # model_obj['confusion_matrix'] ={}
+        # model_obj['confusion_matrix']['tn'] = tn
+        # model_obj['confusion_matrix']['fp'] = fp
+        # model_obj['confusion_matrix']['fn'] = fn
+        # model_obj['confusion_matrix']['tp'] = tp
+        # model_obj['feature_importance'] = model.feature_importances_
+        # report_json['models'].append(model_obj)
+        report_collection.update({'task': ObjectId(model_id)}, {'$push':{'models':model_obj}}, upsert=False)
+    yield("Model loaded and finished Calculating features")
     skewed_data={}
     skewed_data['name']='v2'
     skewed_data['chartType']='line'
@@ -106,7 +133,9 @@ def report(model_id):
     new_obj['types']=types
     skewed_data['sets'].append(new_obj)
     report_json['visualization'].append(skewed_data)
-    return report_json
+    yield("Model loaded second set of visualizations")
+    report_collection.update({'task': ObjectId(model_id)}, {'$push':{'visualizations':skewed_data}}, upsert=False)
+    yield("Report Generated")
 
 # def test_main():
 #     path = 'data/adult.data'
