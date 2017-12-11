@@ -11,9 +11,9 @@ def onTrainRequest(*args):
     while True:
         try:
             data = next(g)
-            socket.emit('LSRES:trainRequest', {'event':'ACK', 'clientID':client, 'data':data})
+            socket.emit('LSRES:trainRequest', {'event':'ACK', 'clientID':client, 'data':data, '_id': task})
         except StopIteration:
-            socket.emit('LSRES:trainRequest', {'event':'ACK', 'clientID':client, 'data':'END'})
+            socket.emit('LSRES:trainRequest', {'event':'ACK', 'clientID':client, 'data':'END', '_id': task})
             break           
 
 
