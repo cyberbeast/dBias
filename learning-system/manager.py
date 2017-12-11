@@ -2,7 +2,7 @@ import json
 import numpy as np
 from pandas import Series
 from data_container.data_loader import read_data,create_json_data,preprocess_data,get_validate_data
-from data_container.data_processor import plot_heatmap,skew_calculator,plot_scatterplot
+from data_container.data_processor import plot_heatmap,skew_calculator,plot_scatterplot,plot_countData
 from data_container.train_models import train_model,predict_model,compute_metrics
 from pymongo import MongoClient
 from bson.objectid import ObjectId
@@ -10,7 +10,9 @@ import pprint
 import pickle
 import os
 from time import time
+import pyimgur
 
+CLIENT_ID = "42de006f84e71af"
 try:
     client = MongoClient('ds135926.mlab.com',35926)
     db = client['dbias']
@@ -27,6 +29,7 @@ path_files = {
 
 data = None
 limit = 0
+toggle_supervisor = False
 def train(model_id):
     model_first = 'random_forest'
     model_second = 'decision_tree'
@@ -76,10 +79,21 @@ def report(model_id):
     report_json = {}
     report_json['visualization'] = []
     report_json['visualization'].append(create_json_data(data))
-    report_collection.update({'task': ObjectId(model_id)}, {'$push':{'visualizations':create_json_data(data)}}, upsert=False)
-    yield("Data pushed to mongo")
-    #plot_heatmap(data) # Plot heatmap
-    #plot_scatterplot(data)
+    #report_collection.update({'task': ObjectId(model_id)}, {'$push':{'visualizations':create_json_data(data)}}, upsert=False)
+    data_subset = create_json_data(data)
+    print(data_subset)
+    #yield("Data pushed to mongo")
+    path_heatmap = plot_heatmap(data) # Plot heatmap
+    path_scatterplot = plot_scatterplot(data)
+    print (path_scatterplot)
+    print(path_heatmap)
+    im = pyimgur.Imgur(CLIENT_ID)
+    uploaded_image = im.upload_image(path_heatmap, title="heatmap")
+    print((uploaded_image.link))
+    report_collection.update({'task':ObjectId(model_id) }, {'$push': {'visualizations':str(uploaded_image.link)}}, upsert=False)
+    uploaded_image = im.upload_image(path_scatterplot, title="scatterplot")
+    print(uploaded_image.link)
+    report_collection.update({'task':ObjectId(model_id) }, {'$push': {'visualizations':str(uploaded_image.link)}}, upsert=False)
     x,y = preprocess_data(data)
     report_json['models']=[]
     yield("First Visualization done")
@@ -134,7 +148,7 @@ def report(model_id):
     skewed_data['sets'].append(new_obj)
     report_json['visualization'].append(skewed_data)
     yield("Model loaded second set of visualizations")
-    report_collection.update({'task': ObjectId(model_id)}, {'$push':{'visualizations':skewed_data}}, upsert=False)
+    #report_collection.update({'task': ObjectId(model_id)}, {'$push':{'visualizations':skewed_data}}, upsert=False)
     yield("Report Generated")
 
 # def test_main():
@@ -154,6 +168,6 @@ def report(model_id):
 #         skewed_values = [{"data": d, "label": l} for d,l in zip(skewed_data, unique_values)]
 #     print(time()-s,"secs")
 
-if __name__ == '__main__':
-    model_id = '5a2ddcfa878cd42cbf0269e3'
-
+# if __name__ == '__main__':
+    # model_id = '5a2ddcfa878cd42cbf0269e3'
+    # print(report(model_id))

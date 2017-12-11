@@ -4,7 +4,7 @@ from scipy import stats
 import sklearn.preprocessing as preprocessing
 import pandas as pd
 import numpy as np
-
+import os
 
 def filter_data(dataset,option='race',value='all'):
     if value !='all':
@@ -68,9 +68,15 @@ def plot_heatmap(data):
     plt.yticks(rotation='horizontal')
     plt.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.2)
     plt.savefig('heatmap.png')
-    return encoded_data.corr()
+    return os.path.abspath('heatmap.png')
+
+def plot_countData(data):
+    print (data)
+    
+    return 0
 
 def plot_scatterplot(data):
     sns.set(style="ticks")
     sns.pairplot(data, hue="class")
     plt.savefig('scatterplot.png')
+    return os.path.abspath('scatterplot.png')
