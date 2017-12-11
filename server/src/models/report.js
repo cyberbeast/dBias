@@ -3,13 +3,13 @@ var Schema = mongoose.Schema;
 
 var reportSchema = new Schema({
 	task: Schema.ObjectId,
-	visualizations: {
-		type: Array,
-		default: []
+	sv_report: {
+		type: Object,
+		default: {}
 	},
-	models: {
-		type: Array,
-		default: []
+	u_report: {
+		type: Object,
+		default: {}
 	}
 });
 
