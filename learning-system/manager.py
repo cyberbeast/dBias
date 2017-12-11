@@ -9,36 +9,37 @@ from bson.objectid import ObjectId
 import pprint
 
 try:
-    model_id = '5a2c5bbd16bf34fb3ba62860'
     client = MongoClient('ds135926.mlab.com',35926)
     db = client['dbias']
     db.authenticate('admin','admin')
     collection = db.tasks
-    model_details = collection.find_one({"_id": ObjectId(model_id)})
-    print (model_details)
 except Exception as e:
     print ("Error: ",e)
 
-def train():
-    path = 'data/adult.data'
+
+path_files = {
+    'Adult Census Income Dataset': 'data/adult.data'
+}
+
+def train(model_id):
     model_name = 'random_forest'
     report ={}
-    pp = pprint.PrettyPrinter(indent=2)
-    if model_details['dataset'] =='Adult Census Income Dataset':
-        data = read_data(path)
-        print('finished loading data')
-    else:
-        print ("Dataset not found")
-    x,y = preprocess_data(data)
-    # Training models
+    model_details = collection.find_one({"_id": ObjectId(model_id)})
     if model_details['trained'] == False:
+        if model_details['dataset'] =='Adult Census Income Dataset':
+            path = path_files[model_details['dataset']]
+            data = read_data(path)
+            yield('finished loading data')
+        else:
+            yield ("Dataset not found")
+        x,y = preprocess_data(data)
         model = train_model(model_name,x[:24000],y[:24000])
-        print('Model Trained')
         model_details['trained'] = True
-        #collection.update({'_id': ObjectId(model_id)}, {'$set': model_details}, upsert=False)
+        collection.update({'_id': ObjectId(model_id)}, {'$set': model_details}, upsert=False)
+        yield('Model Trained')
     else:
-        print ("Model already trained")
-    return 0
+        yield ("Model already trained")
+    yield ("Done")
 
 def report():
     path = 'data/adult.data'

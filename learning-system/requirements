@@ -1,1 +1,5 @@
-socketIO-client
+socketIO-client-nexus
+sklearn
+pandas
+pymongo
+seaborn
