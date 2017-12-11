@@ -63,11 +63,12 @@ def number_encode_features(data):
 def plot_heatmap(data):
     encoded_data, _ = number_encode_features(data)
     sns.heatmap(encoded_data.corr(), square=True)
+    print("Encoded data",encoded_data.corr())
     plt.xticks(rotation='vertical')
     plt.yticks(rotation='horizontal')
     plt.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.2)
     plt.savefig('heatmap.png')
-    return 0
+    return encoded_data.corr()
 
 def plot_scatterplot(data):
     sns.set(style="ticks")

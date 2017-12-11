@@ -1,7 +1,7 @@
 import json
 import numpy as np
 from pandas import Series
-from data_container.data_loader import read_data,dump_json,preprocess_data,get_validate_data
+from data_container.data_loader import read_data,create_json_data,preprocess_data,get_validate_data
 from data_container.data_processor import plot_heatmap,skew_calculator,plot_scatterplot
 from data_container.train_models import train_model,predict_model,compute_metrics
 from pymongo import MongoClient
@@ -55,36 +55,19 @@ def train(model_id):
     model_details['action'] = True
     yield ("Done")
 
-def report_file(model_id):
+def report(model_id):
     pp = pprint.PrettyPrinter(indent=2)
     models = ['random_forest','decision_tree']
     attributes = data.columns
-    # model_first = 'random_forest'
-    # model_second = 'decision_tree'
-    report = {}
-    data_more_50,data_less_50 = dump_json(data)
+    report_json = {}
+    report_json['visualization'] = []
+    report_json['visualization'].append(create_json_data(data))
     #plot_heatmap(data) # Plot heatmap
     #plot_scatterplot(data)
-    more_50 = json.dumps(data_more_50) # send data to ng-chart
-    less_50 = json.dumps(data_less_50) # send data to ng-chart
-    report['data_more_50'] = more_50
-    report['data_less_50'] = less_50
-
     x,y = preprocess_data(data)
-
-
-    # # model
-    # print ("Result from trained model")
-    # print (np.bincount(data[model_first] == '>50K'))
-
-    # # GT
-    # print ("Ground Truth")
-    # print (np.bincount(data['class'] == '>50K'))
-    # bin_count = np.bincount(data['class'] == data[model_first])
-    # print (bin_count)
-
-    # Calculate metrices
+    report_json['models']=[]
     for model_name in models:
+        model_obj = {}
         if os.path.exists('models/'+str(model_id)+model_name+'.pkl'):
             model = pickle.load(open('models/'+str(model_id)+model_name+'.pkl', 'rb'))
         else:
@@ -92,21 +75,32 @@ def report_file(model_id):
             #yield ("Model not found")
         pred = predict_model(model,x[24000:])
         data[model_name] = Series(predict_model(model,x)) # Add to data frame
-        accuracy,classification_error,precision,recall = compute_metrics(data,model_name) # Send data to report
-        report[model_name] = {}
-        report[model_name]['accuracy'] = accuracy
-        report[model_name]['classification_error'] = classification_error
-        report[model_name]['precision'] = precision
-        report[model_name]['recall'] = recall
-    #model_details['accuracy'] = accuracy
-    #collection.update({'_id': ObjectId(model_id)}, {'$set': model_details}, upsert=False)
-
+        accuracy,classification_error,precision,recall,confusion_matrix = compute_metrics(data,model_name) # Send data to report
+        if model_name == 'random_forest':
+            model_obj['type']= 'rf'
+        else:
+            model_obj['type']= 'dt'
+        model_obj['accuracy'] = accuracy*100
+        model_obj['classification_error'] = classification_error*100
+        model_obj['precision'] = precision*100
+        model_obj['recall'] = recall*100
+        model_obj['confusion_matrix'] = confusion_matrix
+        model_obj['feature_importance'] = model.feature_importances_
+        report_json['models'].append(model_obj)
+    skewed_data={}
+    skewed_data['name']='v2'
+    skewed_data['chartType']='line'
+    skewed_data['sets'] = []
     feature = 'race'
-    skewed_data, unique_values = skew_calculator(data,feature) # Send Data to report
-    skewed_values = [{"data": d, "label": l} for d,l in zip(skewed_data, unique_values)]
-    report['skewed']=skewed_values
-    report['attributes'] = attributes
-    return report
+    skewed_values, unique_values = skew_calculator(data,feature) # Send Data to report
+    new_obj = {}
+    new_obj['feature']=feature
+    #for d,l in zip(skewed_data,unique_values):
+    types = [{"y": d, "x": attributes,"category":l} for d,l,a in zip(skewed_values, unique_values,attributes)]
+    new_obj['types']=types
+    skewed_data['sets'].append(new_obj)
+    report_json['visualization'].append(skewed_data)
+    return report_json
 
 # def test_main():
 #     path = 'data/adult.data'
@@ -127,7 +121,4 @@ def report_file(model_id):
 
 if __name__ == '__main__':
     model_id = '5a2ddcfa878cd42cbf0269e3'
-    value = report_file(model_id)
-    print(value['skewed'])
-    print(value['attributes'])
 

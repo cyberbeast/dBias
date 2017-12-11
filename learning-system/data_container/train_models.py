@@ -31,10 +31,10 @@ def predict_model(model,x):
 def compute_metrics(data,model_name):
     [tn, fp], [fn, tp] = confusion_matrix(data['class'],data[model_name])
     accuracy = (tp + tn) / float(tp + tn + fp + fn)
-    print ('Accuracy of model',accuracy)
     classification_error = (fp + fn) / float(tp + tn + fp + fn)
     recall = tp / float(tp + fn)
     precision = tp / float(tp + fp)
-    return accuracy,classification_error,recall,precision
+    confusion_matrix_values = np.array([[tn, fp], [fn, tp]])
+    return accuracy,classification_error,recall,precision,confusion_matrix_values
 
 
