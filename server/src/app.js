@@ -6,6 +6,8 @@ const socketio = require('socket.io');
 const mongoose = require('mongoose');
 const config = require('./config');
 const Task = require('./models/task');
+const Report = require('./models/report');
+
 mongoose.connect(config.dbURI, { useMongoClient: true });
 
 const app = express();
@@ -88,6 +90,16 @@ io.on('connection', function(socket) {
 		var tempTask = new Task(params);
 		tempTask.save(function(err, temp) {
 			if (err) console.log('Error while creating new task template. ', err);
+			var tempReport = new Report({ task: temp.id });
+			tempReport.save(function(err, tempReport) {
+				console.log('Creating new report...');
+				if (err) throw err;
+				Report.findById(tempReport.id, function(err, report) {
+					if (err) throw err;
+					console.log('Sending report...', report);
+					socket.send({ event: 'RES:newReport', data: report });
+				});
+			});
 
 			Task.findById(temp.id, function(err, task) {
 				if (err)
@@ -110,6 +122,13 @@ io.on('connection', function(socket) {
 		});
 	});
 
+	socket.on('getReportByTaskID', function(task_id) {
+		console.log('Client requesting for Task Report');
+		Report.find({ task: mongoose.ObjectId(task_id) }, function(err, report) {
+			socket.send({ event: 'RES:getReportByTaskID', data: report });
+		});
+	});
+
 	socket.on('trainTaskByID', function(id) {
 		console.log('Client requesting trainTaskByID on: ', id);
 		io
@@ -120,13 +139,26 @@ io.on('connection', function(socket) {
 	socket.on('LSRES:trainRequest', function(response) {
 		switch (response.event) {
 			case 'ACK': {
-				io
-					.to(response.clientID)
-					.emit('RES:trainRequest', {
-						event: response.event,
-						data: response.data,
-						_id: response._id
-					});
+				io.to(response.clientID).emit('RES:trainRequest', {
+					event: response.event,
+					data: response.data,
+					_id: response._id
+				});
+				break;
+			}
+
+			case 'UPDATE_TASK': {
+				Task.findById(mongoose.Types.ObjectId(response._id), function(
+					err,
+					task
+				) {
+					if (err) throw err;
+
+					io
+						.to(response.clientID)
+						.send({ event: 'RES:updateTask', data: task });
+				});
+				break;
 			}
 		}
 	});

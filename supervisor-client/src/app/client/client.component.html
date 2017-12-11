@@ -13,7 +13,7 @@
 
     </div>
   </div>
-  <clr-wizard #wizardlg [(clrWizardOpen)]="lgOpen" clrWizardSize="lg">
+  <clr-wizard #wizardlg [(clrWizardOpen)]="lgOpen" clrWizardSize="lg" (clrWizardOnFinish)="doFinish()">
     <clr-wizard-title>New ML Task Wizard</clr-wizard-title>
 
     <clr-wizard-button [type]="'cancel'">Cancel</clr-wizard-button>
