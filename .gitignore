@@ -103,3 +103,4 @@ ENV/
 .DS_Store
 
 learning-system/data/
+learning-system/models/
