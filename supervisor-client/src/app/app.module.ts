@@ -4,7 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { ClarityModule } from 'clarity-angular';
-// import { ChartsModule } from 'ng2-charts';
+import { ChartsModule } from 'ng2-charts';
 
 import { AppComponent } from './app.component';
 // import { BarChartDemoComponent } from './app.component';
@@ -26,7 +26,9 @@ import { TaskService } from './store/services/task.service';
 import { reducer as datasetReducer } from './store/reducers/dataset.reducer';
 import { reducer as supervisorReducer } from './store/reducers/supervisor.reducer';
 import { reducer as taskReducer } from './store/reducers/task.reducer';
+import { reducer as reportReducer } from './store/reducers/report.reducer';
 import { IdFilterPipe } from './id-filter.pipe';
+import { NgPipesModule } from 'ngx-pipes';
 
 const appRoutes: Routes = [
   { path: 'client', component: ClientComponent },
@@ -53,12 +55,15 @@ const appRoutes: Routes = [
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
+    ChartsModule,
+    NgPipesModule,
     RouterModule.forRoot(appRoutes, { enableTracing: true }),
     ClarityModule.forRoot(),
     StoreModule.forRoot({
       availableDatasets: datasetReducer,
       supervisorConfiguration: supervisorReducer,
-      currentTasks: taskReducer
+      currentTasks: taskReducer,
+      currentReports: reportReducer
     })
   ],
   providers: [DatasetService, SupervisorService, TaskService],

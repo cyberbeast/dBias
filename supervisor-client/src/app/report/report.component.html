@@ -1,3 +1,160 @@
-<p>
-  {{o_id}}
-</p>
+<div class="content-container" style="padding-left:24px; padding-right:24px;">
+
+  <div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+      <div class="card">
+        <div class="card-block">
+          <div class="card-text">
+            <div class="row">
+              <div class="col-xs">
+                <h2 style="margin-top:0px">
+                  <b>Name of Task</b>
+                </h2>
+
+                <h5 style="margin-top:0px">Description of this task </h5>
+
+              </div>
+              <div class="col-xs">
+                <div class="row">
+                  <div class="col-xs">
+                    <h5 style="margin-top:0px">Trained </h5>
+                  </div>
+                  <div class="col-xs">
+                    <h5 style="margin-top:0px">Accuracy </h5>
+                  </div>
+                  <div class="col-xs">
+                    <h5 style="margin-top:0px">Action </h5>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-xs">
+                    <p style="font-size:400%; color:black; margin-top:5%">Yes</p>
+                  </div>
+                  <div class="col-xs">
+                    <p style="font-size:400%; color:black; margin-top:5%">75%</p>
+                  </div>
+                  <div class="col-xs">
+                    <p style="font-size:400%; color:black; margin-top:5%">False</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs">
+      <div class="card">
+        <div class="card-header">
+          <b>Decision Tree</b>
+        </div>
+        <div class="card-block">
+
+          <div class="card-text">
+            <div class="row flex-items-xs-center">
+              <div class="col-xs">
+                <div class="row flex-items-xs-center">
+                  <h5 style="margin-top:0px">Accuracy(%) </h5>
+                </div>
+              </div>
+              <div class="col-xs">
+                <div class="row flex-items-xs-center">
+                  <h5 style="margin-top:0px">Precision(%) </h5>
+                </div>
+              </div>
+              <div class="col-xs">
+                <div class="row flex-items-xs-center">
+                  <h5 style="margin-top:0px">Recall(%) </h5>
+                </div>
+              </div>
+            </div>
+            <div class="row flex-items-xs-center">
+              <div class="col-xs">
+                <div class="row flex-items-xs-center">
+                  <p style="font-size:400%; color:black; margin-top:5%">99</p>
+                </div>
+
+              </div>
+              <div class="col-xs">
+                <div class="row flex-items-xs-center">
+                  <p style="font-size:400%; color:black; margin-top:5%">99</p>
+                </div>
+              </div>
+              <div class="col-xs">
+                <div class="row flex-items-xs-center">
+                  <p style="font-size:400%; color:black; margin-top:5%">99</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- <div class="card-footer"> -->
+          <br />
+          <div class="row flex-items-xs-center">
+            <h5 style="margin-top:0px">Confusion Matrix </h5>
+          </div>
+          <table class="table" style="margin-top:0%">
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>I</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>5</td>
+                <td>101</td>
+                <td>V</td>
+              </tr>
+              <tr>
+                <td>10</td>
+                <td>A</td>
+                <td>1010</td>
+                <td>X</td>
+              </tr>
+              <tr>
+                <td>15</td>
+                <td>F</td>
+                <td>1111</td>
+                <td>XV</td>
+              </tr>
+            </tbody>
+          </table>
+          <!-- </div> -->
+        </div>
+        <br />
+      </div>
+    </div>
+    <div class="col-xs">
+      <div class="card">
+        <div class="card-header">
+          {{currentReport['task']}}
+        </div>
+        <div class="card-block">
+          <div class="card-title">
+            Block
+          </div>
+          <div class="card-text">
+            ...
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row flex-items-xs-center">
+    <div class="col-xs">
+      <div class="card">
+        <div class="card-block">
+          <div class="card-title">
+            Block
+          </div>
+          <div class="card-text">
+            ...
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

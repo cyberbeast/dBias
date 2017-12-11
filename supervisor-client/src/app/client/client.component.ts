@@ -34,6 +34,10 @@ export class ClientComponent implements OnInit {
 
   onCommit() {
     this._taskService.newTaskRequest(this.newTaskTemplate);
+  }
+
+  doFinish() {
+    this.wizardLarge.reset();
     this.newTaskTemplate = {
       name: '',
       description: '',
