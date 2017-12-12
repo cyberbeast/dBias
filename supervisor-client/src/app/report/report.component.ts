@@ -19,6 +19,9 @@ export class ReportComponent implements OnInit {
   viz = [];
   sv;
 
+  ds_active = {};
+  skewed_active = {};
+
   constructor(
     private route: ActivatedRoute,
     private location: Location,
@@ -44,6 +47,15 @@ export class ReportComponent implements OnInit {
     this._taskService.selectedReport$.subscribe(report => {
       this.currentReport = report;
       console.log('report component', this.currentReport);
+      this.currentReport.sv_distribution_by_salary.map(
+        v => (this.ds_active[v.feature] = v.active)
+      );
+      console.log('DS: ', this.ds_active);
+
+      this.currentReport.sv_skewed.map(
+        v => (this.skewed_active[v.feature] = v.active)
+      );
+      console.log('SKEWED: ', this.skewed_active);
     });
   }
 
@@ -117,5 +129,26 @@ export class ReportComponent implements OnInit {
 
   public chartHovered(e: any): void {
     console.log(e);
+  }
+
+  toggleViz(feature, type) {
+    console.log('DS; click -', this.ds_active);
+    switch (type) {
+      case 'DS': {
+        console.log('CUR: ' + feature + ' :: ' + this.ds_active[feature]);
+        this.ds_active[feature] =
+          this.ds_active[feature] == true ? false : true;
+        console.log('AFT: ' + feature + ' :: ' + this.ds_active[feature]);
+        break;
+      }
+      case 'SKEWED': {
+        console.log('CUR: ' + feature + ' :: ' + this.skewed_active[feature]);
+        this.skewed_active[feature] =
+          this.skewed_active[feature] == true ? false : true;
+        console.log('AFT: ' + feature + ' :: ' + this.skewed_active[feature]);
+        break;
+      }
+    }
+    // this._taskService.toggleViz(feature, type);
   }
 }

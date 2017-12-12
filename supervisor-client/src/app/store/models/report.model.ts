@@ -3,5 +3,6 @@ export interface Report {
   model_details: object[];
   sv_visualizations: object[];
   sv_distribution_by_salary: object[];
+  sv_skewed: object[];
   u_visualizations?: object[];
 }

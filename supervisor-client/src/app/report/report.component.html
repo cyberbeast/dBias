@@ -113,9 +113,10 @@
 
           <div class="card-text">
             Visualizations
+            <br />
             <div class="btn-group">
               <div *ngFor="let viz of this.currentReport.sv_distribution_by_salary">
-                <clr-checkbox type="checkbox" class="btn" [clrChecked]="viz.active">
+                <clr-checkbox type="checkbox" class="btn" [clrChecked]="this.ds_active[viz.feature]" (change)="toggleViz(viz.feature, 'DS')">
                   {{viz.feature}}
                 </clr-checkbox>
               </div>
@@ -123,13 +124,16 @@
 
             <!-- <pre>{{this.currentReport.sv_visualizations | json}}</pre> -->
             <!-- [yAxis]="count" -->
-            <canvas *ngFor="let viz of this.currentReport.sv_distribution_by_salary" baseChart width="400" height="100" [datasets]="viz.chartData"
-              [labels]="viz.chartLabels" [options]="viz.chartOptions" [colors]="lineChartColors" [legend]="viz.chartLegend"
-              [chartType]="viz.chartType" (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)"></canvas>
+            <div *ngFor="let viz of this.currentReport.sv_distribution_by_salary">
+
+              <canvas *ngIf="this.ds_active[viz.feature]" baseChart width="400" height="100" [datasets]="viz.chartData" [labels]="viz.chartLabels"
+                [options]="viz.chartOptions" [colors]="lineChartColors" [legend]="viz.chartLegend" [chartType]="viz.chartType"
+                (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)"></canvas>
+            </div>
 
             <div class="btn-group">
-              <div *ngFor="let viz of this.currentReport.sv_visualizations">
-                <clr-checkbox type="checkbox" class="btn" [clrChecked]="viz.active">
+              <div *ngFor="let viz of this.currentReport.sv_skewed">
+                <clr-checkbox type="checkbox" class="btn" [clrChecked]="this.skewed_active[viz.feature]" (change)="toggleViz(viz.feature, 'SKEWED')">
                   {{viz.feature}}
                 </clr-checkbox>
               </div>
@@ -137,9 +141,11 @@
 
             <!-- <pre>{{this.currentReport.sv_visualizations | json}}</pre> -->
             <!-- [yAxis]="count" -->
-            <canvas *ngFor="let viz of this.currentReport.sv_visualizations" baseChart width="400" height="100" [datasets]="viz.chartData"
-              [labels]="viz.chartLabels" [options]="viz.chartOptions" [colors]="lineChartColors" [legend]="viz.chartLegend"
-              [chartType]="viz.chartType" (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)"></canvas>
+            <div *ngFor="let viz of this.currentReport.sv_skewed">
+              <canvas *ngIf="this.skewed_active[viz.feature]" baseChart width="400" height="100" [datasets]="viz.chartData" [labels]="viz.chartLabels"
+                [options]="viz.chartOptions" [colors]="lineChartColors" [legend]="viz.chartLegend" [chartType]="viz.chartType"
+                (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)"></canvas>
+            </div>
           </div>
         </div>
       </div>
