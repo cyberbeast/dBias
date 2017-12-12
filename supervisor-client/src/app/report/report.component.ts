@@ -13,6 +13,7 @@ import { FilterByPipe } from 'ngx-pipes';
 export class ReportComponent implements OnInit {
   o_id;
   currentReport;
+  currentTask;
 
   constructor(
     private route: ActivatedRoute,
@@ -28,8 +29,13 @@ export class ReportComponent implements OnInit {
   getReport() {
     const id = this.route.snapshot.paramMap.get('id');
     this.o_id = id;
-    this._taskService.currentReports$.subscribe(reports => {
-      this.currentReport = this.filterByPipe.transform(reports, ['task'], id);
+    this._taskService.selectTask(id);
+    this._taskService.selectReport(id);
+    this._taskService.selectedTask$.subscribe(task => {
+      this.currentTask = task;
+    });
+    this._taskService.selectedReport$.subscribe(report => {
+      this.currentReport = report;
       console.log(this.currentReport);
     });
   }

@@ -27,6 +27,7 @@ import { reducer as datasetReducer } from './store/reducers/dataset.reducer';
 import { reducer as supervisorReducer } from './store/reducers/supervisor.reducer';
 import { reducer as taskReducer } from './store/reducers/task.reducer';
 import { reducer as reportReducer } from './store/reducers/report.reducer';
+import { reducer as selectTaskReducer } from './store/reducers/selectTask.reducer';
 import { IdFilterPipe } from './id-filter.pipe';
 import { NgPipesModule } from 'ngx-pipes';
 
@@ -63,7 +64,8 @@ const appRoutes: Routes = [
       availableDatasets: datasetReducer,
       supervisorConfiguration: supervisorReducer,
       currentTasks: taskReducer,
-      currentReports: reportReducer
+      selectedTask: selectTaskReducer,
+      selectedReport: reportReducer
     })
   ],
   providers: [DatasetService, SupervisorService, TaskService],

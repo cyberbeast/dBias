@@ -57,18 +57,19 @@ export class CreateTask implements Action {
 }
 export type allTaskActions = AddTask | UpdateTask | CreateTask;
 
+export const SELECT_TASK: string = 'SELECT_TASK';
+export class SelectTask implements Action {
+  readonly type = SELECT_TASK;
+  constructor(public payload: Task) {}
+}
+export type allSelectTaskActions = SelectTask;
+
 // Actions for Report Model.
-export const CREATE_REPORT: string = 'CREATE_REPORT';
-export const UPDATE_REPORT: string = 'UPDATE_REPORT';
+export const SET_REPORT: string = 'SET_REPORT';
 
-export class CreateReport implements Action {
-  readonly type = CREATE_REPORT;
+export class SetReport implements Action {
+  readonly type = SET_REPORT;
   constructor(public payload: Report) {}
 }
 
-export class UpdateReport implements Action {
-  readonly type = UPDATE_REPORT;
-  constructor(public payload: Report) {}
-}
-
-export type allReportActions = CreateReport | UpdateReport;
+export type allReportActions = SetReport;
