@@ -24,55 +24,59 @@ except Exception as e:
 path_files = {
     'Adult Census Income Dataset': 'data/adult.data'
 }
-#data = None
-data = read_data('data/adult.data')
-toggle_supervisor = True
+data = None
 def train(model_id):
-    model_first = 'random_forest'
-    model_second = 'decision_tree'
-    models = ['random_forest','decision_tree']
+    models = ['Random Forest','Decision Tree']
     model_details = collection.find_one({"_id": ObjectId(model_id)})
     model_details['action'] = True
     collection.update({'_id': ObjectId(model_id)}, {'$set': model_details}, upsert=False)
-    #yield("Action: " + str(model_details['action']))
+    yield("Action: " + str(model_details['action']))
     if model_details['trained'] == False:
         if model_details['dataset'] =='Adult Census Income Dataset':
             path = path_files[model_details['dataset']]
             data = read_data(path)
             limit = int(0.8*24000)
-            #yield('finished loading data')
+            yield('finished loading data')
         else:
             model_details['action'] = False
-            #yield ("Dataset not found")
-        if toggle_supervisor == False:
+            yield ("Dataset not found")
+        if model_details['supervisor'] == False:
             print('Do user preprocess and model calculation here')
             x,y = preprocess_data(data)
-            #yield('Preprocessed non-supervised data')
+            yield('Preprocessed non-supervised data')
             for i in models:
                 trained_model = train_model(i,x[:limit],y[:limit])
-            #yield("Trained non-supervised models")
+                yield("Trained non-supervised models")
                 pickle.dump(trained_model, open('models/'+str(model_id)+i+'usr'+'.pkl', 'wb'))
-            #yield("Stored non-supervised models")
+                yield("Stored non-supervised models")
         x,y = supervisor(data)
-        #yield('Preprocessed supervised data')
+        yield('Preprocessed supervised data')
         print("Reached here")
+        best_accuracy = {}
         for i in models:
             trained_model = train_model(i,x[:limit],y[:limit])
-            #yield("Trained supervised models")
+            pred = predict_model(trained_model,x[:limit])
+            accuracy = accuracy_score(y[:limit], pred)
+            best_accuracy[i] = round(accuracy*100,2)
+            yield("Trained supervised models")
             pickle.dump(trained_model, open('models/'+str(model_id)+i+'sv'+'.pkl', 'wb'))
-            #yield('Stored supervised models')
-        model_details['trained'] = True
+            yield('Stored supervised models')
+        print("Accuracy:",best_accuracy)
+        maximum = max(best_accuracy, key=best_accuracy.get)
+        model_details['best_training_model'] = maximum
+        model_details['best_training_accuracy'] = best_accuracy[maximum]
+        model_details['trained']= True
         collection.update({'_id': ObjectId(model_id)}, {'$set': model_details}, upsert=False)
-        #yield('Trained supervised models')     
+        yield('Trained supervised models')     
     else:
-        print("nothin")
-        #yield ("Model already trained")
+        print("nothing")
+        yield ("Model already trained")
     print("Report generation starts here")
     attributes = list(data.columns.values)
     report_document = report_collection.find_one({"task": ObjectId(model_id)})
     report_json = {}
     ## Make Toggle json
-    if toggle_supervisor == False:
+    if model_details['supervisor'] == False:
         ## Do User stuff here
         print("Processing user_report")
         ## Calculate visualization and model_data and store it in content
@@ -88,40 +92,38 @@ def train(model_id):
     # Push data into json
     content_data = {'type':'visualizations','data':create_json_data(data)}
     content.append(content_data)
-    #yield("Data pushed to mongo")
+    yield("Data pushed to mongo")
     #path_heatmap = plot_heatmap(data) # Plot heatmap
     #path_scatterplot = plot_scatterplot(data)
     x,y = preprocess_data(data)
     report_json['models']=[]
-    #yield("First Visualization done")
+    yield("First Visualization done")
     for model_name in models:
         model_obj = {}
         if os.path.exists('models/'+str(model_id)+model_name+'sv'+'.pkl'):
             model = pickle.load(open('models/'+str(model_id)+model_name+'sv'+'.pkl', 'rb'))
         else:
             continue
-            #yield ("Model not found")
+            yield ("Model not found")
         pred = predict_model(model,x[24000:])
         data[model_name] = Series(predict_model(model,x)) # Add to data frame
-        
         accuracy,classification_error,precision,recall,tn,fp,fn,tp = compute_metrics(data,model_name) # Send data to report
-        print (accuracy,classification_error,precision,recall)
         model_obj = {
-            'accuracy': accuracy*100,
-            'classification_error': classification_error*100,
-            "precision": precision*100,
-            'recall': recall*100,
+            'accuracy': round(accuracy,2)*100,
+            'classification_error': round(classification_error*100,2),
+            "precision": round(precision*100,2),
+            'recall': round(recall*100,2),
             'confusion_matrix': [int(tn), int(fp), int(fn), int(tp)],
             'feature_importance': model.feature_importances_.tolist()
         }
-        if model_name == 'random_forest':
-            model_obj['type']= 'rf'
+        if model_name == 'Random Forest':
+            model_obj['type']= 'random forest'
         else:
-            model_obj['type']= 'dt'
+            model_obj['type']= 'decision tree'
         content_data = {'type':'model_details','data':model_obj}
         content.append(content_data)
     print(content)
-    #yield("Model loaded and finished Calculating features")
+    yield("Model loaded and finished Calculating features")
     print("calculated model features")
     print(model_obj)
 
@@ -149,8 +151,8 @@ def train(model_id):
         'multi':multi
     }
     print (skewed_data) # Push to viz data
-    #yield("Model loaded second set of visualizations")
-    #yield("Report Generated")
+    yield("Model loaded second set of visualizations")
+    yield("Report Generated")
     content_data = {'type':'visualizations','data':skewed_data}
     content.append(content_data)
     sv_report = {
@@ -161,8 +163,8 @@ def train(model_id):
     report_collection.update({'task': ObjectId(model_id)}, {'$push':{'analysis':sv_report}}, upsert=False)
     model_details['action'] = False
     collection.update({'_id': ObjectId(model_id)}, {'$set': model_details}, upsert=False)
-    #yield("Action: " + str(model_details['action']))
-    #yield ("Done")
+    yield("Action: " + str(model_details['action']))
+    yield ("Done")
 
 
 
