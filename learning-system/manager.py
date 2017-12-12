@@ -117,9 +117,9 @@ def train(model_id):
             'feature_importance': model.feature_importances_.tolist()
         }
         if model_name == 'Random Forest':
-            model_obj['type']= 'random forest'
+            model_obj['type']= 'Random Forest'
         else:
-            model_obj['type']= 'decision tree'
+            model_obj['type']= 'Decision Tree'
         content_data = {'type':'model_details','data':model_obj}
         content.append(content_data)
     print(content)
