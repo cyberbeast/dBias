@@ -127,7 +127,7 @@ io.on('connection', function(socket) {
 		Task.findById(id, function(err, task) {
 			if (err) throw err;
 
-			socket.send({ event: 'RES:getTaskByID', data: task[0] });
+			socket.send({ event: 'RES:getTaskByID', data: task });
 		});
 	});
 
