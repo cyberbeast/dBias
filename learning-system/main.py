@@ -1,6 +1,6 @@
 from requests.exceptions import ConnectionError
 from socketIO_client_nexus import SocketIO
-from manager import train,report
+from manager import train
 
 def onTrainRequest(*args):
     print('Training Request: ', args[0])
