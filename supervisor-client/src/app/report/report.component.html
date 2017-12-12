@@ -5,7 +5,7 @@
       <div class="card">
         <div class="card-block">
           <div class="card-text">
-            <div class="row">
+            <div class="row  flex-items-xs-between">
               <div class="col-xs">
                 <h2 style="margin-top:0px">
                   <b>{{currentTask['name']}}</b>
@@ -31,7 +31,7 @@
                     <p style="font-size:400%; color:black; margin-top:5%">{{currentTask['trained']}}</p>
                   </div>
                   <div class="col-xs">
-                    <p style="font-size:400%; color:black; margin-top:5%">{{currentTask['accuracy']}}</p>
+                    <p style="font-size:400%; color:black; margin-top:5%">{{currentTask['best_training_accuracy']}}</p>
                   </div>
                   <div class="col-xs">
                     <p style="font-size:400%; color:black; margin-top:5%">{{currentTask['action']}}</p>
@@ -45,88 +45,67 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-xs" *ngFor="let model of currentReport.models">
-      <div class="card">
-        <div class="card-header">
-          <!-- <b>{{model.type}}</b> -->
-        </div>
+    <div *ngFor="let model of currentReport.model_details" class="col-xs">
+      <div *ngIf="model" class="card">
         <div class="card-block">
-
-          <div class="card-text">
-            <div class="row flex-items-xs-center">
-              <div class="col-xs">
-                <div class="row flex-items-xs-center">
-                  <h5 style="margin-top:0px">Accuracy(%) </h5>
-                </div>
-              </div>
-              <div class="col-xs">
-                <div class="row flex-items-xs-center">
-                  <h5 style="margin-top:0px">Precision(%) </h5>
-                </div>
-              </div>
-              <div class="col-xs">
-                <div class="row flex-items-xs-center">
-                  <h5 style="margin-top:0px">Recall(%) </h5>
-                </div>
-              </div>
-            </div>
-            <div class="row flex-items-xs-center">
-              <div class="col-xs">
-                <div class="row flex-items-xs-center">
-                  <p style="font-size:300%; color:black; margin-top:5%">as{{model.accuracy | floor: 2}}</p>
-                </div>
-
-              </div>
-              <div class="col-xs">
-                <div class="row flex-items-xs-center">
-                  <p style="font-size:300%; color:black; margin-top:5%">as{{model.precision | floor: 2}}</p>
-                </div>
-              </div>
-              <div class="col-xs">
-                <div class="row flex-items-xs-center">
-                  <p style="font-size:300%; color:black; margin-top:5%">as{{model.recall | floor: 2}}</p>
-                </div>
-              </div>
-            </div>
+          <div class="progress top">
+            <progress *ngIf="model.type === currentTask.best_training_model" value="100" max="100"></progress>
+            <progress *ngIf="model.type !== currentTask.best_training_model" value="0" max="100"></progress>
           </div>
-          <!-- <div class="card-footer"> -->
-          <br />
-          <div class="row flex-items-xs-center">
-            <h5 style="margin-top:0px">Confusion Matrix </h5>
-          </div>
-          <table class="table" style="margin-top:0%">
+          <h4 class="card-title">{{model.type}}</h4>
+          <!-- <pre>{{model |json}}</pre> -->
+          <!-- <p class="card-text"> -->
+          <table class="table table-vertical">
             <tbody>
               <tr>
-                <td>as{{model.confusion_matrix[0]}}</td>
-                <td>as{{model.confusion_matrix[1]}}</td>
+                <th>Testing Accuracy</th>
+                <td>{{model.accuracy}}</td>
               </tr>
               <tr>
-                <td>as{{model.confusion_matrix[2]}}</td>
-                <td>as{{model.confusion_matrix[3]}}</td>
+                <th>Recall</th>
+                <td>{{model.recall}}</td>
+              </tr>
+              <tr>
+                <th>Precision</th>
+                <td>{{model.precision}}</td>
+              </tr>
+              <tr>
+                <th>Classification Error</th>
+                <td>{{model.classification_error}}</td>
+              </tr>
+              <tr>
+                <th>Confusion Matrix</th>
+                <td>
+                  <table class="table table-vertical table-compact" style="margin-top:0">
+                    <tbody>
+                      <tr>
+                        <th>True Negative</th>
+                        <td>{{model.confusion_matrix[0]}}</td>
+                      </tr>
+                      <tr>
+                        <th>False Positive</th>
+                        <td>{{model.confusion_matrix[1]}}</td>
+                      </tr>
+                      <tr>
+                        <th>False Negative</th>
+                        <td>{{model.confusion_matrix[2]}}</td>
+                      </tr>
+                      <tr>
+                        <th>True Positive</th>
+                        <td>{{model.confusion_matrix[3]}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
               </tr>
             </tbody>
           </table>
-          <!-- </div> -->
+          <!-- </p> -->
         </div>
-        <br />
       </div>
     </div>
-    <!-- <div class="col-xs">
-      <div class="card">
-        <div class="card-header">
-          {{currentReport['task']}}
-        </div>
-        <div class="card-block">
-          <div class="card-title">
-            Block
-          </div>
-          <div class="card-text">
-            ...
-          </div>
-        </div>
-      </div>
-    </div> -->
   </div>
+
   <div class="row flex-items-xs-center">
     <div class="col-xs">
       <div class="card">
@@ -134,6 +113,33 @@
 
           <div class="card-text">
             Visualizations
+            <div class="btn-group">
+              <div *ngFor="let viz of this.currentReport.sv_distribution_by_salary">
+                <clr-checkbox type="checkbox" class="btn" [clrChecked]="viz.active">
+                  {{viz.feature}}
+                </clr-checkbox>
+              </div>
+            </div>
+
+            <!-- <pre>{{this.currentReport.sv_visualizations | json}}</pre> -->
+            <!-- [yAxis]="count" -->
+            <canvas *ngFor="let viz of this.currentReport.sv_distribution_by_salary" baseChart width="400" height="100" [datasets]="viz.chartData"
+              [labels]="viz.chartLabels" [options]="viz.chartOptions" [colors]="lineChartColors" [legend]="viz.chartLegend"
+              [chartType]="viz.chartType" (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)"></canvas>
+
+            <div class="btn-group">
+              <div *ngFor="let viz of this.currentReport.sv_visualizations">
+                <clr-checkbox type="checkbox" class="btn" [clrChecked]="viz.active">
+                  {{viz.feature}}
+                </clr-checkbox>
+              </div>
+            </div>
+
+            <!-- <pre>{{this.currentReport.sv_visualizations | json}}</pre> -->
+            <!-- [yAxis]="count" -->
+            <canvas *ngFor="let viz of this.currentReport.sv_visualizations" baseChart width="400" height="100" [datasets]="viz.chartData"
+              [labels]="viz.chartLabels" [options]="viz.chartOptions" [colors]="lineChartColors" [legend]="viz.chartLegend"
+              [chartType]="viz.chartType" (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)"></canvas>
           </div>
         </div>
       </div>
