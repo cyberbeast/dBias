@@ -5,7 +5,8 @@ export interface Task {
   dataset: string;
   type: string;
   trained: boolean;
-  accuracy: number;
+  best_training_accuracy: number;
+  best_training_model: string;
   action: boolean;
   supervisor: boolean;
 }

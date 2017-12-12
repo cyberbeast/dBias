@@ -22,9 +22,13 @@ var taskSchema = new Schema({
 		type: Boolean,
 		default: false
 	},
-	accuracy: {
+	best_training_accuracy: {
 		type: Number,
 		default: 0
+	},
+	best_training_model: {
+		type: String,
+		default: ''
 	},
 	action: {
 		type: Boolean,

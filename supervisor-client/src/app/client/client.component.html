@@ -81,8 +81,11 @@
 
           <div class="row flex-items-xs-between">
             <div class="col-xs">
-              <p style="margin-top:0; color:darkgrey">
+              <p *ngIf="!task.action" style="margin-top:0; color:darkgrey">
                 {{task._id}}
+              </p>
+              <p *ngIf="task.action" style="margin-top:0; color:darkgrey">
+                {{statusMessage | idFilter: task._id }}
               </p>
             </div>
             <div class="col-xs">
@@ -93,21 +96,46 @@
             </div>
           </div>
 
-          <span *ngIf="task.action " class="label ">{{statusMessage | idFilter: task._id }}</span>
+
 
         </div>
         <div class="card-block ">
+          <div *ngIf="task.action " class="progress top loop ">
+            <progress></progress>
+          </div>
+          <div *ngIf="!task.action " class="progress top ">
+            <progress value="0" max="100"></progress>
+          </div>
           <div class="card-text ">
 
             <h1 style="margin-top:0; ">{{task.name}}</h1>
             <p style="margin-top:0 ">{{task.description}}</p>
+            <!-- <pre>{{task | json}}</pre> -->
+            <table class="table table-vertical">
+              <tbody>
+                <tr>
+                  <th>Best Model</th>
+                  <td>{{task.best_training_model}}</td>
+                </tr>
+                <tr>
+                  <th>Best Model's Accuracy</th>
+                  <td>{{task.best_training_accuracy}}</td>
+                </tr>
+                <tr>
+                  <th>Active</th>
+                  <td>{{task.action}}</td>
+                </tr>
+                <tr>
+                  <th>Model Trained</th>
+                  <td>{{task.trained}}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
         <div class="card-footer ">
-          <div *ngIf="task.action " class="progress loop ">
-            <progress></progress>
-          </div>
-          <button [clrLoading]="task.action" (click)="callTrain(task._id) " class="btn btn-sm btn-link " [class.disabled]="task.trained ">Train</button>
+          <button [clrLoading]="task.action" (click)="callTrain(task._id) " class="btn btn-sm btn-link " *ngIf="!task.trained || !task.action"
+            [class.disabled]="task.trained || task.action">Train</button>
           <button routerLink="/report/{{task._id}} " class="btn btn-sm btn-link " [class.disabled]="!task.trained ">Report</button>
         </div>
       </div>

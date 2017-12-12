@@ -36,7 +36,7 @@ var supervisorConfiguration = {
 io.on('connection', function(socket) {
 	console.log('a user connected');
 	socket.on('pythonConnectionRequest', function() {
-		console.log('Learning System connected...');
+		console.log('Learning System is Online! Framework is now ready...');
 		socket.join('learning-system');
 	});
 	socket.on('disconnect', function() {
@@ -157,18 +157,6 @@ io.on('connection', function(socket) {
 					io
 						.to(response.clientID)
 						.send({ event: 'RES:updateTask', data: task });
-				});
-				break;
-			}
-
-			case 'END_TRAINING': {
-				console.log('Reaching here...');
-				Report.find({ task: response._id }, function(err, report) {
-					if (err) throw err;
-
-					io
-						.to(response.clientID)
-						.send({ event: 'RES:newReport', data: report });
 				});
 				break;
 			}
