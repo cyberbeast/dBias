@@ -36,7 +36,7 @@ var supervisorConfiguration = {
 io.on('connection', function(socket) {
 	console.log('a user connected');
 	socket.on('pythonConnectionRequest', function() {
-		console.log('Learning System connected...');
+		console.log('Learning System is Online! Framework is now ready...');
 		socket.join('learning-system');
 	});
 	socket.on('disconnect', function() {
@@ -122,10 +122,22 @@ io.on('connection', function(socket) {
 		});
 	});
 
+	socket.on('getTaskByID', function(id) {
+		console.log('Client requesting to get Task information! ', id);
+		Task.findById(id, function(err, task) {
+			if (err) throw err;
+
+			socket.send({ event: 'RES:getTaskByID', data: task[0] });
+		});
+	});
+
 	socket.on('getReportByTaskID', function(task_id) {
-		console.log('Client requesting for Task Report');
-		Report.find({ task: mongoose.ObjectId(task_id) }, function(err, report) {
-			socket.send({ event: 'RES:getReportByTaskID', data: report });
+		console.log('Client requesting for Task Report for Task: ', task_id);
+		Report.find({ task: mongoose.Types.ObjectId(task_id) }, function(
+			err,
+			report
+		) {
+			socket.send({ event: 'RES:getReportByTaskID', data: report[0] });
 		});
 	});
 
@@ -157,18 +169,6 @@ io.on('connection', function(socket) {
 					io
 						.to(response.clientID)
 						.send({ event: 'RES:updateTask', data: task });
-				});
-				break;
-			}
-
-			case 'END_TRAINING': {
-				console.log('Reaching here...');
-				Report.find({ task: response._id }, function(err, report) {
-					if (err) throw err;
-
-					io
-						.to(response.clientID)
-						.send({ event: 'RES:newReport', data: report });
 				});
 				break;
 			}

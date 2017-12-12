@@ -7,5 +7,6 @@ export interface AppStore {
   availableDatasets: Dataset[];
   supervisorConfiguration: Supervisor;
   currentTasks: Task[];
-  currentReports: Report[];
+  selectedTask: Task;
+  selectedReport: Report;
 }

@@ -16,14 +16,16 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 @Injectable()
 export class TaskService {
   currentTasks$: Observable<Task[]>;
-  currentReports$: Observable<Report[]>;
+  selectedTask$: Observable<Task>;
+  selectedReport$: Observable<Report>;
   statusStream$ = new BehaviorSubject('');
   private socket: SocketIOClient.Socket;
   self = this;
 
   constructor(private store: Store<AppStore>) {
     this.currentTasks$ = store.select('currentTasks');
-    this.currentReports$ = store.select('currentReports');
+    this.selectedReport$ = store.select('selectedReport');
+    this.selectedTask$ = store.select('selectedTask');
     this.socket = io('http://localhost:8081');
     this.socket.on('message', function(response) {
       switch (response.event) {
@@ -54,6 +56,15 @@ export class TaskService {
           break;
         }
 
+        case 'RES:getTaskByID': {
+          console.log('RES:getTaskByID', response);
+          store.dispatch({
+            type: 'SELECT_TASK',
+            payload: response.data
+          });
+          break;
+        }
+
         case 'RES:updateTask': {
           console.log('RES:updateTasks', response);
           store.dispatch({
@@ -62,8 +73,25 @@ export class TaskService {
           });
           break;
         }
+
+        case 'RES:getReportByTaskID': {
+          console.log('RES:getReportByTaskID', response);
+          store.dispatch({
+            type: 'SELECT_REPORT',
+            payload: response.data
+          });
+          break;
+        }
       }
     });
+  }
+
+  selectTask(id) {
+    this.socket.emit('getTaskByID', id);
+  }
+
+  selectReport(id) {
+    this.socket.emit('getReportByTaskID', id);
   }
 
   getSystemTasks() {

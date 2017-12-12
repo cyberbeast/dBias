@@ -42,7 +42,8 @@ export class ClientComponent implements OnInit {
       name: '',
       description: '',
       dataset: '',
-      type: ''
+      type: '',
+      supervisor: true
     };
   }
 
@@ -71,6 +72,7 @@ export class ClientComponent implements OnInit {
     name: '',
     description: '',
     dataset: '',
-    type: ''
+    type: '',
+    supervisor: true
   };
 }

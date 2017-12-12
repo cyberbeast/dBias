@@ -3,11 +3,7 @@ var Schema = mongoose.Schema;
 
 var reportSchema = new Schema({
 	task: Schema.ObjectId,
-	visualizations: {
-		type: Array,
-		default: []
-	},
-	models: {
+	analysis: {
 		type: Array,
 		default: []
 	}

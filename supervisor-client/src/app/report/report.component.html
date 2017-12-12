@@ -48,7 +48,7 @@
     <div class="col-xs" *ngFor="let model of currentReport.models">
       <div class="card">
         <div class="card-header">
-          <b>{{model.type}}</b>
+          <!-- <b>{{model.type}}</b> -->
         </div>
         <div class="card-block">
 
@@ -73,18 +73,18 @@
             <div class="row flex-items-xs-center">
               <div class="col-xs">
                 <div class="row flex-items-xs-center">
-                  <p style="font-size:300%; color:black; margin-top:5%">{{model.accuracy | floor: 2}}</p>
+                  <p style="font-size:300%; color:black; margin-top:5%">as{{model.accuracy | floor: 2}}</p>
                 </div>
 
               </div>
               <div class="col-xs">
                 <div class="row flex-items-xs-center">
-                  <p style="font-size:300%; color:black; margin-top:5%">{{model.precision | floor: 2}}</p>
+                  <p style="font-size:300%; color:black; margin-top:5%">as{{model.precision | floor: 2}}</p>
                 </div>
               </div>
               <div class="col-xs">
                 <div class="row flex-items-xs-center">
-                  <p style="font-size:300%; color:black; margin-top:5%">{{model.recall | floor: 2}}</p>
+                  <p style="font-size:300%; color:black; margin-top:5%">as{{model.recall | floor: 2}}</p>
                 </div>
               </div>
             </div>
@@ -97,12 +97,12 @@
           <table class="table" style="margin-top:0%">
             <tbody>
               <tr>
-                <td>{{model.confusion_matrix[0]}}</td>
-                <td>{{model.confusion_matrix[1]}}</td>
+                <td>as{{model.confusion_matrix[0]}}</td>
+                <td>as{{model.confusion_matrix[1]}}</td>
               </tr>
               <tr>
-                <td>{{model.confusion_matrix[2]}}</td>
-                <td>{{model.confusion_matrix[3]}}</td>
+                <td>as{{model.confusion_matrix[2]}}</td>
+                <td>as{{model.confusion_matrix[3]}}</td>
               </tr>
             </tbody>
           </table>
@@ -133,9 +133,7 @@
         <div class="card-block">
 
           <div class="card-text">
-            <div *ngFor="let image of currentVisualizations">
-              <img src="image" />
-            </div>
+            Visualizations
           </div>
         </div>
       </div>
