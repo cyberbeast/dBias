@@ -25,16 +25,34 @@ def filter_data(dataset,option='race',value='all'):
     return values
 
 
-def skew_calculator(data,feature):
+def skew_calculator(data,feature,attributes):
+    variables = None
+    if feature in ['age','education-num','hours-per-week',]:
+        print("Should not have come here")
+        return 0
     encoded_dataset = data.values
     features = data.columns
-    variables = data[feature].unique()
+    variables_unique = data[feature].unique()
     all_skew_values = []
-    for variable in variables:
+    for variable in variables_unique:
         list_skew_values = filter_data(data,feature,variable)
         all_skew_values.append(list_skew_values)
-    all_skew_values.append(filter_data(data))
-    return all_skew_values,variables # Return this for ng-chart
+    print(data[feature].unique())
+    skewed_values = [{"data": d, "label": l} for d,l in zip(all_skew_values, data[feature].unique())]
+    store_data={
+        'name':'SkewedData',
+        'chartType':'line',
+        'feature':feature,
+        'chartData': skewed_values,
+        'chartLabels':attributes,
+        'chartOptions':
+        {
+            'responsive': True
+        },
+        'chartLegend': True
+    }
+    return store_data
+    # Return this for ng-chart
     # exit()
     # val1 = pd.DataFrame({'features':features,'values':val1})
     # val2 = pd.DataFrame({'features':features,'values':val2})
