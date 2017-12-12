@@ -39,8 +39,14 @@ def train(model_id):
             yield('finished loading data')
         else:
             model_details['action'] = False
+            collection.update({'_id': ObjectId(model_id)}, {'$set': model_details}, upsert=False)
             yield ("Dataset not found")
         if model_details['supervisor'] == False:
+            '''
+            Things to do here:
+            1) Training accuracy and best model
+            2) Make supervisor code
+            '''
             print('Do user preprocess and model calculation here')
             x,y = preprocess_data(data)
             yield('Preprocessed non-supervised data')
@@ -51,7 +57,6 @@ def train(model_id):
                 yield("Stored non-supervised models")
         x,y = supervisor(data)
         yield('Preprocessed supervised data')
-        print("Reached here")
         best_accuracy = {}
         for i in models:
             trained_model = train_model(i,x[:limit],y[:limit])
@@ -61,7 +66,6 @@ def train(model_id):
             yield("Trained supervised models")
             pickle.dump(trained_model, open('models/'+str(model_id)+i+'sv'+'.pkl', 'wb'))
             yield('Stored supervised models')
-        print("Accuracy:",best_accuracy)
         maximum = max(best_accuracy, key=best_accuracy.get)
         model_details['best_training_model'] = maximum
         model_details['best_training_accuracy'] = best_accuracy[maximum]
@@ -69,15 +73,18 @@ def train(model_id):
         collection.update({'_id': ObjectId(model_id)}, {'$set': model_details}, upsert=False)
         yield('Trained supervised models')     
     else:
-        print("nothing")
         yield ("Model already trained")
     print("Report generation starts here")
     attributes = list(data.columns.values)
     report_document = report_collection.find_one({"task": ObjectId(model_id)})
     report_json = {}
-    ## Make Toggle json
     if model_details['supervisor'] == False:
-        ## Do User stuff here
+        '''
+        Things to do here
+        1) make json for user report
+        2) Add visualzations and model data
+        3) push to report
+        '''
         print("Processing user_report")
         ## Calculate visualization and model_data and store it in content
         usr_report = {
@@ -114,12 +121,12 @@ def train(model_id):
             "precision": round(precision*100,2),
             'recall': round(recall*100,2),
             'confusion_matrix': [int(tn), int(fp), int(fn), int(tp)],
-            'feature_importance': model.feature_importances_.tolist()
+            'feature_importance': model.feature_importances_.tolist() # Make this into a graph
         }
         if model_name == 'Random Forest':
-            model_obj['type']= 'random forest'
+            model_obj['type']= 'Random Forest'
         else:
-            model_obj['type']= 'decision tree'
+            model_obj['type']= 'Decision Tree'
         content_data = {'type':'model_details','data':model_obj}
         content.append(content_data)
     print(content)
