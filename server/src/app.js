@@ -122,10 +122,22 @@ io.on('connection', function(socket) {
 		});
 	});
 
+	socket.on('getTaskByID', function(id) {
+		console.log('Client requesting to get Task information! ', id);
+		Task.findById(id, function(err, task) {
+			if (err) throw err;
+
+			socket.send({ event: 'RES:getTaskByID', data: task[0] });
+		});
+	});
+
 	socket.on('getReportByTaskID', function(task_id) {
-		console.log('Client requesting for Task Report');
-		Report.find({ task: mongoose.ObjectId(task_id) }, function(err, report) {
-			socket.send({ event: 'RES:getReportByTaskID', data: report });
+		console.log('Client requesting for Task Report for Task: ', task_id);
+		Report.find({ task: mongoose.Types.ObjectId(task_id) }, function(
+			err,
+			report
+		) {
+			socket.send({ event: 'RES:getReportByTaskID', data: report[0] });
 		});
 	});
 
