@@ -29,34 +29,38 @@ def create_json_data(data):
     data_more50 = data.loc[data['class'] == '>50K']
     categories = ['<=50K','>50K']
     store_values = {}
-    store_values['name']='v1'
-    store_values['chartType']='line'
-    store_values['sets']=[]
     column_names = list(data.columns.values)
+    column_names=['age']
     for i in column_names:
         if i =='fnlwgt':
             continue
-        obj = {}
-        obj['feature'] = str(i)
-        obj['types'] = []
+        obj = []
         for category in categories:
-            data_point={}
             count_values = None
             x=[]
             y=[]
-            data_point['category'] = category
             if category == '<=50K':
-                count_values = Counter(data_less50[i])
-                   
+                count_values = Counter(data_less50[i])       
             else:
-                count_values = Counter(data_less50[i])    
+                count_values = Counter(data_less50[i])
+            series = []
             for xlabel,count in count_values.items():
-                x.append(xlabel)
-                y.append(count)
-            data_point['x']=x
-            data_point['y']=y
-            obj['types'].append(data_point)
-        store_values['sets'].append(obj)
+                data_point={
+                    'name':xlabel,
+                    'value':count
+                }
+                series.append(data_point)
+            categories = {
+                'name': category,
+                'series': series
+            }
+            obj.append(categories)
+    store_values={
+        'name':'age vs count graph',
+        'chartType':'line',
+        'feature':'age',
+        'multi': obj
+    }
     return store_values
 
     '''
@@ -78,6 +82,31 @@ def create_json_data(data):
     return 0
 
 def preprocess_data(data):
+    encoded_x = None
+    numeric_x = None
+    X = data.fillna(0).loc[:, data.columns != 'class'].values
+    X[X == '?'] = '0'
+    Y = data['class']
+    for i in range(0, X.shape[1]):
+        if type(X[0,i]) != str:
+            if numeric_x is None:
+                numeric_x = X[:,i].reshape(X.shape[0], 1)
+            else:
+                numeric_x = np.concatenate((X[:,i].reshape(X.shape[0], 1), numeric_x), axis=1)
+            continue
+        label_encoder = LabelEncoder()
+        feature = label_encoder.fit_transform(X[:,i])
+        feature = feature.reshape(X.shape[0], 1)
+        onehot_encoder = OneHotEncoder(sparse=False)
+        feature = onehot_encoder.fit_transform(feature)
+        if encoded_x is None:
+            encoded_x = feature
+        else:
+            encoded_x = np.concatenate((encoded_x, feature), axis=1)
+    X_ = np.concatenate((numeric_x, encoded_x), axis=1)
+    return X_,Y
+
+def supervisor(data):
     encoded_x = None
     numeric_x = None
     X = data.fillna(0).loc[:, data.columns != 'class'].values
