@@ -4,6 +4,7 @@ from pandas import Series
 from data_container.data_loader import read_data,create_json_data,preprocess_data,get_validate_data,supervisor
 from data_container.data_processor import plot_heatmap,skew_calculator,plot_scatterplot
 from data_container.train_models import train_model,predict_model,compute_metrics
+from sklearn.metrics import accuracy_score
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 import pprint
@@ -25,80 +26,68 @@ path_files = {
 }
 #data = None
 data = read_data('data/adult.data')
-limit = 0
 toggle_supervisor = True
 def train(model_id):
-    print("readched")
     model_first = 'random_forest'
     model_second = 'decision_tree'
-    global data
-    global limit
+    models = ['random_forest','decision_tree']
     model_details = collection.find_one({"_id": ObjectId(model_id)})
     model_details['action'] = True
     collection.update({'_id': ObjectId(model_id)}, {'$set': model_details}, upsert=False)
-    yield("Action: " + str(model_details['action']))
+    #yield("Action: " + str(model_details['action']))
     if model_details['trained'] == False:
         if model_details['dataset'] =='Adult Census Income Dataset':
             path = path_files[model_details['dataset']]
             data = read_data(path)
-            limit = int(0.8*data.shape[0])
-            yield('finished loading data')
+            limit = int(0.8*24000)
+            #yield('finished loading data')
         else:
             model_details['action'] = False
-            yield ("Dataset not found")
+            #yield ("Dataset not found")
         if toggle_supervisor == False:
-            print('Do user preprocess and mode calculation here')
+            print('Do user preprocess and model calculation here')
             x,y = preprocess_data(data)
-            yield('Preprocessed non-supervised data')
-            model_rf = train_model(model_first,x[:limit],y[:limit])
-            model_dt = train_model(model_second,x[:limit],y[:limit])
-            yield("Trained non-supervised models")
-            pickle.dump(model_rf, open('models/'+str(model_id)+model_first+'usr'+'.pkl', 'wb'))
-            pickle.dump(model_dt, open('models/'+str(model_id)+model_second+'usr'+'.pkl', 'wb'))
-            yield("Stored non-supervised models")
+            #yield('Preprocessed non-supervised data')
+            for i in models:
+                trained_model = train_model(i,x[:limit],y[:limit])
+            #yield("Trained non-supervised models")
+                pickle.dump(trained_model, open('models/'+str(model_id)+i+'usr'+'.pkl', 'wb'))
+            #yield("Stored non-supervised models")
         x,y = supervisor(data)
-        yield('Preprocessed supervised data')
-        model_rf = train_model(model_first,x[:limit],y[:limit])
-        model_dt = train_model(model_second,x[:limit],y[:limit])
+        #yield('Preprocessed supervised data')
+        print("Reached here")
+        for i in models:
+            trained_model = train_model(i,x[:limit],y[:limit])
+            #yield("Trained supervised models")
+            pickle.dump(trained_model, open('models/'+str(model_id)+i+'sv'+'.pkl', 'wb'))
+            #yield('Stored supervised models')
         model_details['trained'] = True
         collection.update({'_id': ObjectId(model_id)}, {'$set': model_details}, upsert=False)
-        yield('Trained supervised models')
-        pickle.dump(model_rf, open('models/'+str(model_id)+model_first+'.pkl', 'wb'))
-        pickle.dump(model_dt, open('models/'+str(model_id)+model_second+'.pkl', 'wb'))
-        yield('Stored supervised models')
+        #yield('Trained supervised models')     
     else:
-        yield ("Model already trained")
-    report_gen = report_data(model_id)
-    while True:
-        try:
-            yield(next(report_gen))
-        except StopIteration:
-            break
-    model_details['action'] = False
-    collection.update({'_id': ObjectId(model_id)}, {'$set': model_details}, upsert=False)
-    yield("Action: " + str(model_details['action']))
-    yield ("Done")
-
-def report_data(model_id):
-    print("reached here")
-    data = read_data('data/adult.data')
-    pp = pprint.PrettyPrinter(indent=2)
-    models = ['random_forest','decision_tree']
+        print("nothin")
+        #yield ("Model already trained")
+    print("Report generation starts here")
     attributes = list(data.columns.values)
-    #report_document = report_collection.find_one({"task": ObjectId(model_id)})
+    report_document = report_collection.find_one({"task": ObjectId(model_id)})
     report_json = {}
     ## Make Toggle json
     if toggle_supervisor == False:
         ## Do User stuff here
         print("Processing user_report")
-        usr_report = {}
+        ## Calculate visualization and model_data and store it in content
+        usr_report = {
+            'type': 'user report',
+            'content': []
+        }
 
     # Doing supervisor stuff
-    sv_report = {}
-    sv_report['visualization'] = []
-    sv_report['visualization'].append(create_json_data(data)) #Push to viz data
+    content = []
+    #sv_report['visualization'] = []
+    #sv_report['visualization'].append(create_json_data(data)) #Push to viz data
     # Push data into json
-    #report_collection.update({'task': ObjectId(model_id)}, {'$push':{'visualizations':create_json_data(data)}}, upsert=False)
+    content_data = {'type':'visualizations','data':create_json_data(data)}
+    content.append(content_data)
     #yield("Data pushed to mongo")
     #path_heatmap = plot_heatmap(data) # Plot heatmap
     #path_scatterplot = plot_scatterplot(data)
@@ -107,8 +96,8 @@ def report_data(model_id):
     #yield("First Visualization done")
     for model_name in models:
         model_obj = {}
-        if os.path.exists('models/'+str(model_id)+model_name+'.pkl'):
-            model = pickle.load(open('models/'+str(model_id)+model_name+'.pkl', 'rb'))
+        if os.path.exists('models/'+str(model_id)+model_name+'sv'+'.pkl'):
+            model = pickle.load(open('models/'+str(model_id)+model_name+'sv'+'.pkl', 'rb'))
         else:
             continue
             #yield ("Model not found")
@@ -116,6 +105,7 @@ def report_data(model_id):
         data[model_name] = Series(predict_model(model,x)) # Add to data frame
         
         accuracy,classification_error,precision,recall,tn,fp,fn,tp = compute_metrics(data,model_name) # Send data to report
+        print (accuracy,classification_error,precision,recall)
         model_obj = {
             'accuracy': accuracy*100,
             'classification_error': classification_error*100,
@@ -128,10 +118,13 @@ def report_data(model_id):
             model_obj['type']= 'rf'
         else:
             model_obj['type']= 'dt'
-        #report_collection.update({'task': ObjectId(model_id)}, {'$push':{'models':model_obj}}, upsert=False)
+        content_data = {'type':'model_details','data':model_obj}
+        content.append(content_data)
+    print(content)
     #yield("Model loaded and finished Calculating features")
     print("calculated model features")
     print(model_obj)
+
 
     # Calculate skewed data
     feature = 'race'
@@ -157,15 +150,24 @@ def report_data(model_id):
     }
     print (skewed_data) # Push to viz data
     #yield("Model loaded second set of visualizations")
-    #report_collection.update({'task': ObjectId(model_id)}, {'$push':{'visualizations':skewed_data}}, upsert=False)
     #yield("Report Generated")
-    return 0
+    content_data = {'type':'visualizations','data':skewed_data}
+    content.append(content_data)
+    sv_report = {
+        'type':'sv_report',
+        'content':content
+        
+    }
+    report_collection.update({'task': ObjectId(model_id)}, {'$push':{'analysis':sv_report}}, upsert=False)
+    model_details['action'] = False
+    collection.update({'_id': ObjectId(model_id)}, {'$set': model_details}, upsert=False)
+    #yield("Action: " + str(model_details['action']))
+    #yield ("Done")
 
 
 
 def main():
-    print("running model")
-    model_id = '5a2ddcfa878cd42cbf0269e3'
-    print(report_data(model_id))
-    print("done")
+    model_id = '5a2f45cce2a6d713f31cdee4'
+    train(model_id)
+
 main()
