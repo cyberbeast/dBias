@@ -25,8 +25,10 @@ path_files = {
     'Adult Census Income Dataset': 'data/adult.data'
 }
 data = None
+
 def train(model_id):
     models = ['Random Forest','Decision Tree']
+    not_parseable = ['fnlwgt','capital-gain','capital-loss','class']
     model_details = collection.find_one({"_id": ObjectId(model_id)})
     model_details['action'] = True
     collection.update({'_id': ObjectId(model_id)}, {'$set': model_details}, upsert=False)
@@ -39,8 +41,14 @@ def train(model_id):
             yield('finished loading data')
         else:
             model_details['action'] = False
+            collection.update({'_id': ObjectId(model_id)}, {'$set': model_details}, upsert=False)
             yield ("Dataset not found")
         if model_details['supervisor'] == False:
+            '''
+            Things to do here:
+            1) Training accuracy and best model
+            2) Make supervisor code
+            '''
             print('Do user preprocess and model calculation here')
             x,y = preprocess_data(data)
             yield('Preprocessed non-supervised data')
@@ -51,7 +59,6 @@ def train(model_id):
                 yield("Stored non-supervised models")
         x,y = supervisor(data)
         yield('Preprocessed supervised data')
-        print("Reached here")
         best_accuracy = {}
         for i in models:
             trained_model = train_model(i,x[:limit],y[:limit])
@@ -61,7 +68,6 @@ def train(model_id):
             yield("Trained supervised models")
             pickle.dump(trained_model, open('models/'+str(model_id)+i+'sv'+'.pkl', 'wb'))
             yield('Stored supervised models')
-        print("Accuracy:",best_accuracy)
         maximum = max(best_accuracy, key=best_accuracy.get)
         model_details['best_training_model'] = maximum
         model_details['best_training_accuracy'] = best_accuracy[maximum]
@@ -69,15 +75,21 @@ def train(model_id):
         collection.update({'_id': ObjectId(model_id)}, {'$set': model_details}, upsert=False)
         yield('Trained supervised models')     
     else:
-        print("nothing")
         yield ("Model already trained")
+        model_details['action'] = False
+        collection.update({'_id': ObjectId(model_id)}, {'$set': model_details}, upsert=False)
+        yield("Action: " + str(model_details['action']))
     print("Report generation starts here")
     attributes = list(data.columns.values)
     report_document = report_collection.find_one({"task": ObjectId(model_id)})
     report_json = {}
-    ## Make Toggle json
     if model_details['supervisor'] == False:
-        ## Do User stuff here
+        '''
+        Things to do here
+        1) make json for user report
+        2) Add visualzations and model data
+        3) push to report
+        '''
         print("Processing user_report")
         ## Calculate visualization and model_data and store it in content
         usr_report = {
@@ -90,8 +102,11 @@ def train(model_id):
     #sv_report['visualization'] = []
     #sv_report['visualization'].append(create_json_data(data)) #Push to viz data
     # Push data into json
-    content_data = {'type':'visualizations','data':create_json_data(data)}
-    content.append(content_data)
+    all_data = []
+    content_data = []
+    for i in attributes:
+        if i not in not_parseable:
+            content.append({'type':'visualizations','data':create_json_data(data,i)})
     yield("Data pushed to mongo")
     #path_heatmap = plot_heatmap(data) # Plot heatmap
     #path_scatterplot = plot_scatterplot(data)
@@ -114,7 +129,7 @@ def train(model_id):
             "precision": round(precision*100,2),
             'recall': round(recall*100,2),
             'confusion_matrix': [int(tn), int(fp), int(fn), int(tp)],
-            'feature_importance': model.feature_importances_.tolist()
+            'feature_importance': model.feature_importances_.tolist() # Make this into a graph
         }
         if model_name == 'Random Forest':
             model_obj['type']= 'Random Forest'
@@ -127,40 +142,19 @@ def train(model_id):
     print("calculated model features")
     print(model_obj)
 
-
     # Calculate skewed data
-    feature = 'race'
-    skewed_values, unique_values = skew_calculator(data,feature) # Send Data to report
-    multi = []
-    for skew,feature in zip(skewed_values,unique_values):
-        series=[]
-        for sk,attri in zip(skew,attributes):
-            series.append({
-                'name':attri,
-                'value':sk
-            })
-        data_point = {
-            'name':feature,
-            'series':series
-        }
-        multi.append(data_point)
-        skewed_data={
-        'name':'skewed data graph',
-        'chartType': 'line',
-        'feature': 'race',
-        'multi':multi
-    }
-    print (skewed_data) # Push to viz data
+    for feature in attributes:
+        if feature not in not_parseable:
+            if skew_calculator(data,feature,attributes):
+                content.append({'type':'visualizations','data':skew_calculator(data,feature,attributes)})
     yield("Model loaded second set of visualizations")
-    yield("Report Generated")
-    content_data = {'type':'visualizations','data':skewed_data}
-    content.append(content_data)
     sv_report = {
         'type':'sv_report',
         'content':content
         
     }
     report_collection.update({'task': ObjectId(model_id)}, {'$push':{'analysis':sv_report}}, upsert=False)
+    yield("Report Generated")
     model_details['action'] = False
     collection.update({'_id': ObjectId(model_id)}, {'$set': model_details}, upsert=False)
     yield("Action: " + str(model_details['action']))

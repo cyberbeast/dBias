@@ -23,43 +23,37 @@ def read_data(path):
 '''
 Make two dictionaries for count of featres<=50K & >50K
 '''
-def create_json_data(data):
+def create_json_data(data,feature):
     data['class'] = data['class'].map(lambda x: x.strip())
     data_less50 = data.loc[data['class'] == '<=50K']
     data_more50 = data.loc[data['class'] == '>50K']
     categories = ['<=50K','>50K']
     store_values = {}
-    column_names = list(data.columns.values)
-    column_names=['age']
-    for i in column_names:
-        if i =='fnlwgt':
-            continue
-        obj = []
-        for category in categories:
-            count_values = None
-            x=[]
-            y=[]
-            if category == '<=50K':
-                count_values = Counter(data_less50[i])       
-            else:
-                count_values = Counter(data_less50[i])
-            series = []
-            for xlabel,count in count_values.items():
-                data_point={
-                    'name':xlabel,
-                    'value':count
-                }
-                series.append(data_point)
-            categories = {
-                'name': category,
-                'series': series
-            }
-            obj.append(categories)
+    obj = []
+    for category in categories:
+        count_values = None
+        if category == '<=50K':
+            count_values = Counter(data_less50[feature])       
+        else:
+            count_values = Counter(data_more50[feature])
+        values = list(count_values.values())
+        categories = {
+            'data': values,
+            'label': category
+        }
+        obj.append(categories)
+    labels = list(count_values.keys())
     store_values={
-        'name':'age vs count graph',
-        'chartType':'line',
-        'feature':'age',
-        'multi': obj
+        'name':'DistributionBySalary',
+        'chartType':'bar',
+        'feature':feature,
+        'chartData': obj,
+        'chartLabels':labels,
+        'chartOptions':
+        {
+            'responsive': True
+        },
+        'chartLegend': True
     }
     return store_values
 
