@@ -28,8 +28,8 @@ def predict_model(model,x):
     pred = model.predict(x)
     return pred
 
-def compute_metrics(data,model_name):
-    [tn, fp], [fn, tp] = confusion_matrix(data['class'],data[model_name])
+def compute_metrics(data,model_name,pred):
+    [tn, fp], [fn, tp] = confusion_matrix(data['class'],pred)
     accuracy = (tp + tn) / float(tp + tn + fp + fn)
     classification_error = (fp + fn) / float(tp + tn + fp + fn)
     recall = tp / float(tp + fn)

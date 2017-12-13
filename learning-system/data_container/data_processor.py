@@ -28,7 +28,6 @@ def filter_data(dataset,option='race',value='all'):
 def skew_calculator(data,feature,attributes):
     variables = None
     if feature in ['age','education-num','hours-per-week',]:
-        print("Should not have come here")
         return 0
     encoded_dataset = data.values
     features = data.columns
@@ -37,7 +36,6 @@ def skew_calculator(data,feature,attributes):
     for variable in variables_unique:
         list_skew_values = filter_data(data,feature,variable)
         all_skew_values.append(list_skew_values)
-    print(data[feature].unique())
     skewed_values = [{"data": d, "label": l} for d,l in zip(all_skew_values, data[feature].unique())]
     store_data={
         'name':'SkewedData',
@@ -52,17 +50,6 @@ def skew_calculator(data,feature,attributes):
         'chartLegend': True
     }
     return store_data
-    # Return this for ng-chart
-    # exit()
-    # val1 = pd.DataFrame({'features':features,'values':val1})
-    # val2 = pd.DataFrame({'features':features,'values':val2})
-    # val3 = pd.DataFrame({'features':features,'values':val3})
-    # fig, ax = plt.subplots()
-    # sns.pointplot(x='features', y='values', data=val1, ax=ax, color='b')
-    # sns.pointplot(x='features', y='values', data=val2, ax=ax, color='g')
-    # sns.pointplot(x='features', y='values', data=val3, ax=ax, color='k')
-    # ax.set_xticklabels(features, rotation=-30)
-    # plt.savefig('skew.png')
 
 '''
 Encode features intp numbers making it easier to make cor-relation matrix
@@ -81,7 +68,6 @@ def number_encode_features(data):
 def plot_heatmap(data):
     encoded_data, _ = number_encode_features(data)
     sns.heatmap(encoded_data.corr(), square=True)
-    print("Encoded data",encoded_data.corr())
     plt.xticks(rotation='vertical')
     plt.yticks(rotation='horizontal')
     plt.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.2)
