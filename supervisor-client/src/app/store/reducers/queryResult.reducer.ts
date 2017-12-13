@@ -10,7 +10,7 @@ export type Action = StoreActions.allQueryResultActions;
 const initialState: State = {
   columns: [],
   index: [0],
-  data: [[]],
+  data: [],
   resultCount: 0
 };
 

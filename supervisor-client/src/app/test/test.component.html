@@ -28,15 +28,22 @@
         </div>
         <div class="card-block">
           <div class="card-text">
-            <clr-datagrid>
-              <clr-dg-column *ngFor="let column of queryResult.columns">{{column}}</clr-dg-column>
+            <clr-datagrid *ngIf="queryResult.columns.length > 0">
+              <clr-dg-placeholder>We couldn't find any users!</clr-dg-placeholder>
+              <clr-dg-column *ngFor="let column of queryResult.columns">
+                <ng-container *clrDgHideableColumn="{hidden: column.hidden}">{{column.name}}</ng-container>
+              </clr-dg-column>
 
 
-              <clr-dg-row *ngFor="let row of queryResult.data ">
+              <clr-dg-row *clrDgItems="let row of queryResult.data " [clrDgItem]="row">
                 <clr-dg-cell *ngFor="let cell of row">{{cell}}</clr-dg-cell>
               </clr-dg-row>
 
-              <clr-dg-footer>{{queryResult.data.length}} rows</clr-dg-footer>
+              <clr-dg-footer>
+                {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}} of {{pagination.totalItems}} rows
+                <clr-dg-pagination #pagination [clrDgPageSize]="15"></clr-dg-pagination>
+                <!-- {{queryResult.data.length}} rows -->
+              </clr-dg-footer>
             </clr-datagrid>
           </div>
         </div>

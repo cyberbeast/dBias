@@ -21,9 +21,11 @@ const initialState: State = {
     }
   ],
   sv_visualizations: [],
-  sv_distribution_by_salary: [],
   u_visualizations: [],
-  sv_skewed: []
+  sv_distribution_by_salary: [],
+  sv_skewed: [],
+  u_distribution_by_salary: [],
+  u_skewed: []
 };
 
 // Reducer definition
