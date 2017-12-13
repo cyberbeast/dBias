@@ -36,6 +36,7 @@ def train(model_id):
     model_details = collection.find_one({"_id": ObjectId(model_id)})
     model_details['action'] = True
     collection.update({'_id': ObjectId(model_id)}, {'$set': model_details}, upsert=False)
+    skewed_data=['race']
     yield("Action: " + str(model_details['action']))
     if model_details['trained'] == False:
         if model_details['dataset'] =='Adult Census Income Dataset':
@@ -138,11 +139,11 @@ def train(model_id):
                 model_obj['type']= 'Decision Tree'
             content_data = {'type':'model_details','data':model_obj}
             content.append(content_data)
-            for feature in attributes:
-                if feature not in not_parseable:
-                    if skew_calculator(full_data,feature,attributes):
-                        content.append({'type':'visualizations','data':skew_calculator(full_data,feature,attributes)})
-                yield("Model loaded second set of visualizations")
+        for feature in skewed_data:
+            if feature not in not_parseable:
+                if skew_calculator(full_data,feature,attributes):
+                    content.append({'type':'visualizations','data':skew_calculator(full_data,feature,attributes)})
+            yield("Model loaded second set of visualizations")
             usr_report = {
             'type': 'u_report',
             'content': content
@@ -202,7 +203,7 @@ def train(model_id):
     
     # Calculate skewed data
     print(data)
-    for feature in attributes:
+    for feature in skewed_data:
         if feature not in not_parseable:
             if skew_calculator(data,feature,attributes):
                 content.append({'type':'visualizations','data':skew_calculator(data,feature,attributes)})
