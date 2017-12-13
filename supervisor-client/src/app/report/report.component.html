@@ -130,7 +130,17 @@
                 [options]="viz.chartOptions" [colors]="lineChartColors" [legend]="viz.chartLegend" [chartType]="viz.chartType"
                 (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)"></canvas>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xs">
+      <div class="card">
+        <div class="card-block">
 
+          <div class="card-text">
+            Visualizations
+            <br />
             <div class="btn-group">
               <div *ngFor="let viz of this.currentReport.sv_skewed">
                 <clr-checkbox type="checkbox" class="btn" [clrChecked]="this.skewed_active[viz.feature]" (change)="toggleViz(viz.feature, 'SKEWED')">
@@ -146,6 +156,7 @@
                 [options]="viz.chartOptions" [colors]="lineChartColors" [legend]="viz.chartLegend" [chartType]="viz.chartType"
                 (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)"></canvas>
             </div>
+
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@ import { Dataset } from '../models/dataset.model';
 import { Supervisor } from '../models/supervisor.model';
 import { Task } from '../models/task.model';
 import { Report } from '../models/report.model';
+import { QueryResult } from '../models/queryResult.model';
 
 // Actions for Dataset model.
 export const SET_DATASET: string = 'SET_DATASET';
@@ -73,3 +74,19 @@ export class SetReport implements Action {
 }
 
 export type allReportActions = SetReport;
+
+// Actions for queryResult Model.
+export const SET_QUERY_RESULT: string = 'SET_QUERY_RESULT';
+export const RESET_QUERY_RESULT: string = 'RESET_QUERY_RESULT';
+
+export class SetQueryResult implements Action {
+  readonly type = SET_QUERY_RESULT;
+  constructor(public payload: QueryResult) {}
+}
+
+export class ResetQueryResult implements Action {
+  readonly type = RESET_QUERY_RESULT;
+  constructor(public payload: QueryResult) {}
+}
+
+export type allQueryResultActions = SetQueryResult | ResetQueryResult;
