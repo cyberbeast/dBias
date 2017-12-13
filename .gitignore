@@ -104,4 +104,5 @@ ENV/
 
 learning-system/data/
 learning-system/models/
+learning-system/dataset/
 *.png
