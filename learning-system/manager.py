@@ -25,6 +25,10 @@ except Exception as e:
 path_files = {
     'Adult Census Income Dataset': 'data/adult.data'
 }
+
+def report_generate():
+    return 0
+
 def train(model_id):
     models = ['Random Forest','Decision Tree']
     not_parseable = ['fnlwgt','capital-gain','capital-loss','class']
@@ -134,7 +138,7 @@ def train(model_id):
             content_data = {'type':'model_details','data':model_obj}
             content.append(content_data)
             usr_report = {
-            'type': 'user report',
+            'type': 'u_report',
             'content': content
             }
             report_collection.update({'task': ObjectId(model_id)}, {'$push':{'analysis':usr_report}}, upsert=False)
