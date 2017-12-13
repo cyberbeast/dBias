@@ -148,6 +148,21 @@ io.on('connection', function(socket) {
 			.emit('LS:trainRequest', { clientID: socket.id, taskID: id });
 	});
 
+	socket.on('testQuery', function(params) {
+		console.log('Client requesting results for query!');
+		io.to('learning-system').emit('LS:testQuery', {
+			clientID: socket.id,
+			taskID: params.taskID,
+			query: params.query
+		});
+	});
+
+	socket.on('LSRES:testQuery', function(response) {
+		io.to(response.clientID).emit('RES:testQuery', {
+			data: response.data
+		});
+	});
+
 	socket.on('LSRES:trainRequest', function(response) {
 		switch (response.event) {
 			case 'ACK': {
