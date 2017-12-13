@@ -14,7 +14,7 @@ from sklearn.metrics import confusion_matrix
 
 
 def train_model(model_name,x,y):
-    if model_name == 'random_forest':
+    if model_name == 'Random Forest':
         model_rf = RF(n_estimators=100, n_jobs=-1)
         model_rf.fit(x,y)
         return model_rf
