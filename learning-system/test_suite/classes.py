@@ -20,10 +20,21 @@ class Suite:
             resultSet, resultCount = q.lookup(self.dataFrame, query)
             ## to_json returns a str
             ## need to convert to json using loads
-            jsonOut = json.loads(resultSet.to_json(orient='split'))
+            jsonOut = json.loads(resultSet.to_json(orient='split',default_handler=MyEncoder))
+            #del jsonOut['data']
             jsonOut['resultCount'] = resultCount
             yield jsonOut
 
+class MyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, numpy.integer):
+            return int(obj)
+        elif isinstance(obj, numpy.floating):
+            return float(obj)
+        elif isinstance(obj, numpy.ndarray):
+            return obj.tolist()
+        else:
+            return super(MyEncoder, self).default(obj)
 
 class Query:
     
@@ -63,5 +74,5 @@ class Query:
                 resultMask &= currentMask
             elif conjunction == 'or':
                 resultMask |= currentMask
-        
-        return dataFrame[resultMask], np.bincount(resultMask)[1]
+        resultCount = int(np.bincount(resultMask)[1])
+        return dataFrame[resultMask], resultCount

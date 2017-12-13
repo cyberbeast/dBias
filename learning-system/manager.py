@@ -149,9 +149,8 @@ def train(model_id):
     print(model_obj)
     if not os.path.exists('dataset/'):
         os.makedirs('dataset/')
-        pickle.dump(data, open('dataset/'+str(model_id)+'.pkl', 'wb'))
-    else:
-        pickle.dump(data, open('dataset/'+str(model_id)+'.pkl', 'wb'))
+    pickle.dump(data, open('dataset/'+str(model_id)+'.pkl', 'wb'))
+    
     # Calculate skewed data
     for feature in attributes:
         if feature not in not_parseable:
@@ -174,16 +173,15 @@ def train(model_id):
 
 def test_suite(query,task_id):
     data = pickle.load(open('dataset/'+str(task_id)+'.pkl', 'rb'))
+    print(type(query), query)
+    query = json.loads(query)
     suite = Suite(data,"demo_suite")
     suite.add_query(query, "demo_query")
     out = next(suite.run())
-    print("Running from Test_suite",type(out['data'][0]))
-    print("Running from Test_suite",type(out['data']))
-    print('done')
     return out
 
 def main():
-    task_id = '5a306f643b7a19a199e8e0bd'
+    task_id = '5a30c0933b35f5500f27e7c7'
     query = { 'conditions': [
             {
                 'feature': 'race',
@@ -208,3 +206,6 @@ def main():
         'conjunctions': ['and', 'and', 'and']
     }
     value = test_suite(query,task_id)
+
+if __name__=="__main__":
+    main()
