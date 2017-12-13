@@ -158,6 +158,7 @@ io.on('connection', function(socket) {
 	});
 
 	socket.on('LSRES:testQuery', function(response) {
+		console.log('Received reply from LS');
 		io.to(response.clientID).emit('RES:testQuery', {
 			data: response.data
 		});
