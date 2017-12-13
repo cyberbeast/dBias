@@ -10,6 +10,7 @@ from bson.objectid import ObjectId
 import pprint
 import pickle
 import os
+from test_suite.classes import Query,Suite
 
 try:
     client = MongoClient('ds135926.mlab.com',35926)
@@ -55,9 +56,14 @@ def train(model_id):
             for i in models:
                 trained_model = train_model(i,x[:limit],y[:limit])
                 yield("Trained non-supervised models")
-                pickle.dump(trained_model, open('models/'+str(model_id)+i+'usr'+'.pkl', 'wb'))
+                if not os.path.exists('models/'):
+                    os.makedirs('dataset/')
+                    pickle.dump(trained_model, open('models/'+str(model_id)+i+'usr'+'.pkl', 'wb'))
+                else:
+                    pickle.dump(trained_model, open('models/'+str(model_id)+i+'usr'+'.pkl', 'wb'))
                 yield("Stored non-supervised models")
-        x,y = supervisor(data)
+        x,y = preprocess_data(data) # Change this later
+        print("Passed supervisor yay")
         yield('Preprocessed supervised data')
         best_accuracy = {}
         for i in models:
@@ -133,7 +139,7 @@ def train(model_id):
         }
         if model_name == 'Random Forest':
             model_obj['type']= 'Random Forest'
-        else:
+        elif model_name == 'Decision Tree' :
             model_obj['type']= 'Decision Tree'
         content_data = {'type':'model_details','data':model_obj}
         content.append(content_data)
@@ -141,7 +147,11 @@ def train(model_id):
     yield("Model loaded and finished Calculating features")
     print("calculated model features")
     print(model_obj)
-
+    if not os.path.exists('dataset/'):
+        os.makedirs('dataset/')
+        pickle.dump(data, open('dataset/'+str(model_id)+'.pkl', 'wb'))
+    else:
+        pickle.dump(data, open('dataset/'+str(model_id)+'.pkl', 'wb'))
     # Calculate skewed data
     for feature in attributes:
         if feature not in not_parseable:
@@ -162,8 +172,39 @@ def train(model_id):
 
 
 
-def main():
-    model_id = '5a2f45cce2a6d713f31cdee4'
-    train(model_id)
+def test_suite(query,task_id):
+    data = pickle.load(open('dataset/'+str(task_id)+'.pkl', 'rb'))
+    suite = Suite(data,"demo_suite")
+    suite.add_query(query, "demo_query")
+    out = next(suite.run())
+    print("Running from Test_suite",type(out['data'][0]))
+    print("Running from Test_suite",type(out['data']))
+    print('done')
+    return out
 
-main()
+def main():
+    task_id = '5a306f643b7a19a199e8e0bd'
+    query = { 'conditions': [
+            {
+                'feature': 'race',
+                'operation': 'eq',
+                'value': 'Black'
+            },
+            {
+                'feature': 'sex',
+                'operation': 'eq',
+                'value': 'Female'
+            },
+            {
+                'feature': 'marital-status',
+                'operation': 'eq',
+                'value': 'Divorced'
+            },
+            {
+                'feature': 'age',
+                'operation': 'gte',
+                'value': 35
+            }],
+        'conjunctions': ['and', 'and', 'and']
+    }
+    value = test_suite(query,task_id)

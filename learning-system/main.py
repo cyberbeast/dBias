@@ -1,6 +1,6 @@
 from requests.exceptions import ConnectionError
 from socketIO_client_nexus import SocketIO
-from manager import train
+from manager import train,test_suite
 
 def onTrainRequest(*args):
     print('Training Request: ', args[0])
@@ -21,11 +21,13 @@ def onTrainRequest(*args):
             break
 
 def onTestQuery(*args):
+    print("Entering test suite")
     params = args[0]
     client = params['clientID']
     task = params['taskID']
     query = params['query']
-    response = {}
+    response = test_suite(query,task)
+    print("Got out of response")
     socket.emit('LSRES:testQuery', {'clientID': client, data: response})        
 
    
