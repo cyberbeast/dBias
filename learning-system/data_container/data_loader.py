@@ -19,6 +19,11 @@ def read_data(path):
     data = open(path)
     #column_names = list(data.columns.values)
     data = pd.read_csv(data,sep='\s*,\s*',encoding='ascii',names = column_names,engine='python')
+    #for col in data.columns:
+    #    try:
+    #        data[col] = data[col].astype(int)
+    #    except ValueError:
+    #        pass
     return data
 
 '''

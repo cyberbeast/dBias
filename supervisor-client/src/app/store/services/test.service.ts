@@ -28,6 +28,7 @@ export class TestService {
   }
 
   submitQuery(taskID, query) {
+    console.log('Test:', taskID, query);
     this.store.dispatch({
       type: 'RESET_QUERY_RESULT'
     });

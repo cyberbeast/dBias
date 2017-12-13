@@ -188,9 +188,8 @@ def train(model_id):
     print(model_obj)
     if not os.path.exists('dataset/'):
         os.makedirs('dataset/')
-        pickle.dump(data, open('dataset/'+str(model_id)+'.pkl', 'wb'))
-    else:
-        pickle.dump(data, open('dataset/'+str(model_id)+'.pkl', 'wb'))
+    pickle.dump(data, open('dataset/'+str(model_id)+'.pkl', 'wb'))
+    
     # Calculate skewed data
     print(data)
     for feature in attributes:
@@ -214,10 +213,9 @@ def train(model_id):
 
 def test_suite(query,task_id):
     data = pickle.load(open('dataset/'+str(task_id)+'.pkl', 'rb'))
+    print(type(query), query)
+    query = json.loads(query)
     suite = Suite(data,"demo_suite")
     suite.add_query(query, "demo_query")
     out = next(suite.run())
-    print("Running from Test_suite",type(out['data'][0]))
-    print("Running from Test_suite",type(out['data']))
-    print('done')
     return out

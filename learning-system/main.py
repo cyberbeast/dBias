@@ -27,8 +27,11 @@ def onTestQuery(*args):
     task = params['taskID']
     query = params['query']
     response = test_suite(query,task)
-    print("Got out of response")
-    socket.emit('LSRES:testQuery', {'clientID': client, data: response})        
+    debug = response['data'][0]
+    #for i in debug:
+    #    print(i,type(i))
+    print(response.keys())
+    socket.emit('LSRES:testQuery', {'clientID': client, 'data': response})        
 
    
 try:

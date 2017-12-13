@@ -5,6 +5,7 @@ import 'brace';
 import 'brace/mode/json';
 import 'brace/theme/eclipse';
 import { TestService } from '../store/services/test.service';
+import { ValuesPipe } from 'ngx-pipes';
 
 @Component({
   selector: 'app-test',
@@ -21,6 +22,7 @@ export class TestComponent implements OnInit {
   ) {
     this._testService.currentQueryResult$.subscribe(result => {
       this.queryResult = result;
+      console.log('HERE:', this.queryResult);
     });
   }
   theme = 'eclipse';
