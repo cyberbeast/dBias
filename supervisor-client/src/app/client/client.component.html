@@ -137,6 +137,7 @@
           <button [clrLoading]="task.action" (click)="callTrain(task._id) " class="btn btn-sm btn-link " *ngIf="!task.trained || !task.action"
             [class.disabled]="task.trained || task.action">Train</button>
           <button routerLink="/report/{{task._id}}" class="btn btn-sm btn-link " [class.disabled]="!task.trained ">Report</button>
+          <button routerLink="/test/{{task._id}}" class="btn btn-sm btn-link " [class.disabled]="!task.trained ">Test</button>
         </div>
       </div>
     </div>

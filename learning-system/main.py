@@ -18,11 +18,22 @@ def onTrainRequest(*args):
         except StopIteration:
             socket.emit('LSRES:trainRequest', {'event':'ACK', 'clientID':client, 'data':'END', '_id': task})
             # socket.emit('LSRES:trainRequest', {'event':'UPDATE_TASK', 'clientID':client, 'data':data, '_id':task})
-            break           
+            break
+
+def onTestQuery(*args):
+    params = args[0]
+    client = params['clientID']
+    task = params['taskID']
+    query = params['query']
+    response = {}
+    socket.emit('LSRES:testQuery', {'clientID': client, data: response})        
+
+   
 try:
     socket = SocketIO('localhost', 8081, wait_for_connection=False)
     socket.emit('pythonConnectionRequest')
     socket.on('LS:trainRequest', onTrainRequest)
+    socket.on('LS:testQuery', onTestQuery)
     socket.wait()
 except ConnectionError:
     print('The server is down. Try again later.')

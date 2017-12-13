@@ -1,0 +1,48 @@
+<!-- <p>
+  {{taskID}}
+</p> -->
+<div class="content-container" style="padding-left:24px; padding-right:24px;">
+  <div class="row">
+    <div class="col-xs-3">
+      <div class="card">
+        <div class="card-header">
+          Query
+        </div>
+        <div class="card-block">
+          <div class="card-text">
+            <ace-editor [(text)]="code" [mode]="languageMode" [readOnly]="readOnly" [theme]="theme" [autoUpdateContent]="true" [durationBeforeCallback]="1000"
+              (textChanged)="onChange()" [options]="options" style="overflow: scroll;"> </ace-editor>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button class="btn btn-sm btn-link">Submit</button>
+        </div>
+
+      </div>
+
+    </div>
+    <div class="col-xs">
+      <div class="card">
+        <div class="card-header">
+          Results
+        </div>
+        <div class="card-block">
+          <div class="card-text">
+            <clr-datagrid>
+              <clr-dg-column *ngFor="let column of queryResult.columns">{{column}}</clr-dg-column>
+
+              <clr-dg-row *clrDgItems="let row of queryResult.data">
+                <clr-dg-cell *ngFor="let cell of row">{{cell}}</clr-dg-cell>
+              </clr-dg-row>
+
+              <clr-dg-footer>{{queryResult.data.length}} rows</clr-dg-footer>
+            </clr-datagrid>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+</div>

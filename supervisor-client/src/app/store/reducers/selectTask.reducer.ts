@@ -6,8 +6,22 @@ import * as StoreActions from '../actions/store.actions';
 
 export type Action = StoreActions.allSelectTaskActions;
 
+// Define initial state
+const initialState: State = {
+  _id: '...',
+  name: '...',
+  description: '...',
+  dataset: '...',
+  type: '...',
+  trained: false,
+  best_training_accuracy: 0,
+  best_training_model: '...',
+  action: false,
+  supervisor: false
+};
+
 // Reducer definition
-export function reducer(state: State = null, action: Action) {
+export function reducer(state: State = initialState, action: Action) {
   switch (action.type) {
     case StoreActions.SELECT_TASK: {
       return action.payload;

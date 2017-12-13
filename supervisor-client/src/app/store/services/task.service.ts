@@ -76,14 +76,64 @@ export class TaskService {
 
         case 'RES:getReportByTaskID': {
           console.log('RES:getReportByTaskID', response);
+          var sv_skewed = [];
+          var sv_distribution_by_salary = [];
+          var u_viz = [];
+          var model_details = [];
+          response.data.analysis.map(a => {
+            console.log('A:', a.type);
+            if (a.type === 'sv_report') {
+              var toggle = true;
+              var skewedToggle = true;
+
+              a.content.map(val => {
+                if (val.type == 'visualizations') {
+                  console.log('F:', val.data.name);
+                  if (val.data.name === 'DistributionBySalary') {
+                    var temp = val.data;
+                    temp['active'] = toggle;
+                    toggle = false;
+                    sv_distribution_by_salary.push(temp);
+                  } else if (val.data.name === 'SkewedData') {
+                    var temp = val.data;
+                    temp['active'] = skewedToggle;
+                    skewedToggle = false;
+                    sv_skewed.push(temp);
+                  }
+                } else if (val.type == 'model_details') {
+                  model_details.push(val.data);
+                }
+              });
+            }
+          });
+          console.log('RES:getReportByTaskID ', model_details);
           store.dispatch({
-            type: 'SELECT_REPORT',
-            payload: response.data
+            type: 'SET_REPORT',
+            payload: {
+              _id: response.data._id,
+              model_details: model_details,
+              sv_visualizations: [],
+              sv_distribution_by_salary: sv_distribution_by_salary,
+              sv_skewed: sv_skewed,
+              u_visualizations: u_viz
+            }
           });
           break;
         }
       }
     });
+  }
+
+  toggleViz(feature, type) {
+    switch (type) {
+      case 'DS': {
+        this.store.dispatch({
+          type: 'TOGGLE_DS_REPORT',
+          payload: feature
+        });
+        break;
+      }
+    }
   }
 
   selectTask(id) {
