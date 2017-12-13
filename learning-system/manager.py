@@ -27,6 +27,7 @@ path_files = {
 }
 
 def report_generate():
+    
     return 0
 
 def train(model_id):
@@ -137,12 +138,17 @@ def train(model_id):
                 model_obj['type']= 'Decision Tree'
             content_data = {'type':'model_details','data':model_obj}
             content.append(content_data)
+            for feature in attributes:
+                if feature not in not_parseable:
+                    if skew_calculator(full_data,feature,attributes):
+                        content.append({'type':'visualizations','data':skew_calculator(full_data,feature,attributes)})
+                yield("Model loaded second set of visualizations")
             usr_report = {
             'type': 'u_report',
             'content': content
             }
-            report_collection.update({'task': ObjectId(model_id)}, {'$push':{'analysis':usr_report}}, upsert=False)
-            yield('User data updated')
+        report_collection.update({'task': ObjectId(model_id)}, {'$push':{'analysis':usr_report}}, upsert=False)
+        yield('User data updated')
     # Doing supervisor stuff
     content = []
     #sv_report['visualization'] = []
