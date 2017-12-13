@@ -42,12 +42,14 @@ def train(model_id):
         if model_details['dataset'] =='Adult Census Income Dataset':
             path = path_files[model_details['dataset']]
             data = read_data(path)
+            test_data = read_data('data/adult.data')
             attributes = list(data.columns.values)
             yield('finished loading data')
         else:
             model_details['action'] = False
             collection.update({'_id': ObjectId(model_id)}, {'$set': model_details}, upsert=False)
             yield ("Dataset not found")
+        best_accuracy = {}
         if model_details['supervisor'] == False:
             '''
             Things to do here:
@@ -60,6 +62,9 @@ def train(model_id):
             yield('Preprocessed non-supervised data')
             for i in models:
                 trained_model = train_model(i,x,y)
+                pred = predict_model(trained_model,x)
+                accuracy = accuracy_score(y, pred)
+                best_accuracy[i] = round(accuracy*100,2)
                 yield("Trained non-supervised models")
                 if not os.path.exists('models/'):
                     os.makedirs('dataset/')
@@ -69,15 +74,11 @@ def train(model_id):
                 yield("Stored non-supervised models")
         index = supervisor_fn(data) # Change this later
         data = data.loc[index]
-        print("Shape of data",data.shape)
         x,y = preprocess_data(data)
-        print(x[0:50])
-        print('y',y[0:50])
-        best_accuracy = {}
+        x_test,y_test = preprocess_data(test_data)
         for i in models:
             trained_model = train_model(i,x,y)
             pred = predict_model(trained_model,x)
-            print(pred)
             accuracy = accuracy_score(y, pred)
             best_accuracy[i] = round(accuracy*100,2)
             yield("Trained supervised models")
@@ -94,7 +95,6 @@ def train(model_id):
         model_details['action'] = False
         collection.update({'_id': ObjectId(model_id)}, {'$set': model_details}, upsert=False)
         yield("Action: " + str(model_details['action']))
-    print("Report generation starts here")
     report_document = report_collection.find_one({"task": ObjectId(model_id)})
     report_json = {}
     if model_details['supervisor'] == False:
@@ -121,10 +121,10 @@ def train(model_id):
             else:
                 continue
                 yield ("Model not found")
-            pred = predict_model(model,x)
-            data['usr'+model_name] = Series(predict_model(model,x)) # Add to data frame
-            data['usr'+model_name].replace([None], ['>50K'], inplace=True)
-            accuracy,classification_error,precision,recall,tn,fp,fn,tp = compute_metrics(data,model_name,pred) # Send data to report
+            pred = predict_model(model,x_test)
+            data['usr_'+model_name] = Series(predict_model(model,x)) # Add to data frame
+            data['usr_'+model_name].replace([None], ['>50K'], inplace=True)
+            accuracy,classification_error,precision,recall,tn,fp,fn,tp = compute_metrics(test_data,model_name,pred) # Send data to report
             model_obj = {
                 'accuracy': round(accuracy,2)*100,
                 'classification_error': round(classification_error*100,2),
@@ -133,10 +133,7 @@ def train(model_id):
                 'confusion_matrix': [int(tn), int(fp), int(fn), int(tp)],
                 'feature_importance': model.feature_importances_.tolist() # Make this into a graph
             }
-            if model_name == 'Random Forest':
-                model_obj['type']= 'Random Forest'
-            elif model_name == 'Decision Tree' :
-                model_obj['type']= 'Decision Tree'
+            model_obj['type']= model_name
             content_data = {'type':'model_details','data':model_obj}
             content.append(content_data)
         for feature in skewed_data:
@@ -152,17 +149,12 @@ def train(model_id):
         yield('User data updated')
     # Doing supervisor stuff
     content = []
-    #sv_report['visualization'] = []
-    #sv_report['visualization'].append(create_json_data(data)) #Push to viz data
-    # Push data into json
     all_data = []
     content_data = []
     for i in attributes:
         if i not in not_parseable:
             content.append({'type':'visualizations','data':create_json_data(data,i)})
     yield("Data pushed to mongo")
-    #path_heatmap = plot_heatmap(data) # Plot heatmap
-    #path_scatterplot = plot_scatterplot(data)
     report_json['models']=[]
     yield("First Visualization done")
     for model_name in models:
@@ -172,13 +164,10 @@ def train(model_id):
         else:
             continue
             yield ("Model not found")
-        pred = predict_model(model,x)
+        pred = predict_model(model,x_test)
         data[model_name] = Series(predict_model(model,x)) # Add to data frame
-        print("Model Name",data[model_name])
-        print("values",data[model_name].unique())
         data[model_name].replace([None], ['>50K'], inplace=True)
-        print("Models",data[model_name])
-        accuracy,classification_error,precision,recall,tn,fp,fn,tp = compute_metrics(data,model_name,pred) # Send data to report
+        accuracy,classification_error,precision,recall,tn,fp,fn,tp = compute_metrics(test_data,model_name,pred) # Send data to report
         model_obj = {
             'accuracy': round(accuracy,2)*100,
             'classification_error': round(classification_error*100,2),
@@ -193,16 +182,13 @@ def train(model_id):
             model_obj['type']= 'Decision Tree'
         content_data = {'type':'model_details','data':model_obj}
         content.append(content_data)
-    print(content)
     yield("Model loaded and finished Calculating features")
     print("calculated model features")
-    print(model_obj)
     if not os.path.exists('dataset/'):
         os.makedirs('dataset/')
     pickle.dump(data, open('dataset/'+str(model_id)+'.pkl', 'wb'))
     
     # Calculate skewed data
-    print(data)
     for feature in skewed_data:
         if feature not in not_parseable:
             if skew_calculator(data,feature,attributes):
