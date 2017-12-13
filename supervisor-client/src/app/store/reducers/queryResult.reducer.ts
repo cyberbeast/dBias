@@ -8,9 +8,9 @@ export type Action = StoreActions.allQueryResultActions;
 
 // Define initial state
 const initialState: State = {
-  columns: [''],
+  columns: [],
   index: [0],
-  data: [{}],
+  data: [[]],
   resultCount: 0
 };
 

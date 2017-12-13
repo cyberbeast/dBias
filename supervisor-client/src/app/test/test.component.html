@@ -15,7 +15,7 @@
           </div>
         </div>
         <div class="card-footer">
-          <button class="btn btn-sm btn-link">Submit</button>
+          <button (click)="submitQuery()" class="btn btn-sm btn-link">Submit</button>
         </div>
 
       </div>
@@ -31,7 +31,8 @@
             <clr-datagrid>
               <clr-dg-column *ngFor="let column of queryResult.columns">{{column}}</clr-dg-column>
 
-              <clr-dg-row *clrDgItems="let row of queryResult.data">
+
+              <clr-dg-row *ngFor="let row of queryResult.data ">
                 <clr-dg-cell *ngFor="let cell of row">{{cell}}</clr-dg-cell>
               </clr-dg-row>
 
