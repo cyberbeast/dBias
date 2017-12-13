@@ -17,12 +17,24 @@ class Suite:
         for query,name in self.queries:
             print ("Testing query:",name)
             q = Query(name)
+            conditions = query['conditions']
+            active_features_json = {}
+            for feature in self.dataFrame.columns:
+                active_features_json[feature] = {'name':feature, 'hidden':True}
+
+            for condition in conditions:
+                feature = condition['feature']
+                active_features_json[feature]['hidden'] = False
+
             resultSet, resultCount = q.lookup(self.dataFrame, query)
+            resultSet = resultSet
             ## to_json returns a str
             ## need to convert to json using loads
             jsonOut = json.loads(resultSet.to_json(orient='split',default_handler=MyEncoder))
-            #del jsonOut['data']
             jsonOut['resultCount'] = resultCount
+            del jsonOut['columns']
+            jsonOut['columns'] = list(active_features_json.values())
+            
             yield jsonOut
 
 class MyEncoder(json.JSONEncoder):
